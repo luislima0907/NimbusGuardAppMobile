@@ -1,5 +1,6 @@
 package com.crissnm.registrousuarios.ManejoDeUsuarios
 
+
 object Validaciones {
 
     private val nombreRegex = Regex("^[A-ZÁÉÍÓÚ][a-záéíóú]+(?: [A-ZÁÉÍÓÚ][a-záéíóú]+)*$")

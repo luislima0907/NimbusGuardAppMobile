@@ -42,6 +42,3 @@ fun RegistrationFormPreview() {
         }
     }
 }
-
-
-
