@@ -1,4 +1,4 @@
-package com.crissnm.registrousuarios
+package com.crissnm.registrousuarios.ManejoDeUsuarios
 
 object Validaciones {
 

@@ -1,4 +1,4 @@
-package com.crissnm.registrousuarios
+package com.crissnm.registrousuarios.ManejoDeUsuarios
 
 data class User (
     val nombres: String,
