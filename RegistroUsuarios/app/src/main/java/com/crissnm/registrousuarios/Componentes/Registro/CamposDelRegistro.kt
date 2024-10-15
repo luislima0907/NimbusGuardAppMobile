@@ -1,5 +1,6 @@
 package com.crissnm.registrousuarios.Componentes.Registro
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
@@ -330,6 +332,66 @@ fun ContrasenaField(contrasena: MutableState<String>) {
         textStyle = TextStyle(fontSize = 12.sp),
         visualTransformation = PasswordVisualTransformation()  // Ocultar texto
     )
+}
+
+@Composable
+fun RegisterUserButton(
+    nombres: MutableState<String>,
+    apellidos: MutableState<String>,
+    cui: MutableState<String>,
+    telefono: MutableState<String>,
+    email: MutableState<String>,
+    contrasena: MutableState<String>,
+    onClick: () -> Unit
+) {
+    val context = LocalContext.current
+
+    Column(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Button(
+            onClick = {
+                // Verificación de campos vacíos
+                when {
+                    nombres.value.isBlank() -> {
+                        Toast.makeText(context, "El campo de nombres está vacío", Toast.LENGTH_SHORT).show()
+                    }
+                    apellidos.value.isBlank() -> {
+                        Toast.makeText(context, "El campo de apellidos está vacío", Toast.LENGTH_SHORT).show()
+                    }
+                    cui.value.isBlank() -> {
+                        Toast.makeText(context, "El campo de CUI está vacío", Toast.LENGTH_SHORT).show()
+                    }
+                    telefono.value.isBlank() -> {
+                        Toast.makeText(context, "El campo de teléfono está vacío", Toast.LENGTH_SHORT).show()
+                    }
+                    email.value.isBlank() -> {
+                        Toast.makeText(context, "El campo de correo está vacío", Toast.LENGTH_SHORT).show()
+                    }
+                    contrasena.value.isBlank() -> {
+                        Toast.makeText(context, "El campo de contraseña está vacío", Toast.LENGTH_SHORT).show()
+                    }
+                    else -> {
+                        // Si todo está completo, mostrar registro exitoso y ejecutar la acción
+                        Toast.makeText(context, "Registro exitoso", Toast.LENGTH_SHORT).show()
+                        onClick()
+                    }
+                }
+            },
+            modifier = Modifier.width(200.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Magenta,
+                contentColor = Color.White
+            )
+        ) {
+            Text(
+                text = "Registrarme",
+                fontWeight = FontWeight.Bold,
+            )
+        }
+        Spacer(modifier = Modifier.height(2.dp))
+    }
 }
 
 @Composable

@@ -20,12 +20,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.crissnm.registrousuarios.Componentes.Inicio.ItemDeLaBarra
-import com.crissnm.registrousuarios.Navegacion.ManejoDeLasPantallasDeLaApp
 
 @Composable
 fun PantallaPrincipal(navController: NavController){
     barraDeNavegacionInferior()
-    //contenidoDeLaBarraDeNavegacionInferior(modifier = Modifier, selectedIndex = 0)
 }
 
 @Composable
@@ -76,6 +74,5 @@ fun contenidoDeLaBarraDeNavegacionInferior(modifier: Modifier, selectedIndex: In
         0 -> PantallaDeInicio(navController)
         1 -> PantallaDePerfil(navController)
         2 -> PantallaDeNotificacion(navController)
-        //3 -> PantallaDetalleDeLaAlerta(navController)
     }
 }
