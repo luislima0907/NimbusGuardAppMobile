@@ -16,6 +16,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -38,6 +39,7 @@ import com.crissnm.registrousuarios.DepYmuni.ValidarCUI
 import com.crissnm.registrousuarios.ManejoDeUsuarios.Validaciones
 import com.crissnm.registrousuarios.R
 
+
 @Composable
 fun Titulo() {
     Box(
@@ -46,8 +48,8 @@ fun Titulo() {
     ) {
         Text(
             text = "REGÍSTRATE",
-            modifier = Modifier.padding(bottom = 1.dp),
-            color = Color.Cyan,
+            modifier = Modifier.padding(bottom = 0.dp),
+            color = Color.Black,
             fontSize = 27.sp,
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.Serif
@@ -62,10 +64,10 @@ fun ImagenRegis(){
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(id = R.drawable.registro),
-            contentDescription = "Descripción de la imagen",
+            painter = painterResource(id = R.drawable.registrouser),
+            contentDescription = "Registrate",
             modifier = Modifier
-                .size(30.dp)
+                .size(35.dp)
                 .offset(y = (-10).dp)
 
         )
@@ -77,7 +79,7 @@ fun ImagenRegis(){
 fun NombreField(nombres: MutableState<String>) {
     val errorMessage = remember { mutableStateOf("") }
 
-    TextField(
+    OutlinedTextField(
         value = nombres.value,
         onValueChange = {
             nombres.value = it
@@ -91,9 +93,12 @@ fun NombreField(nombres: MutableState<String>) {
         label = { Text("Nombres", fontSize = 12.sp) },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 0.dp, bottom = 0.dp),
+            .height(60.dp)
+            .padding(bottom = 1.dp),
         textStyle = TextStyle(fontSize = 14.sp),
-        isError = errorMessage.value.isNotEmpty()
+        isError = errorMessage.value.isNotEmpty(),
+        singleLine = true,
+
     )
 
     if (errorMessage.value.isNotEmpty()) {
@@ -110,7 +115,7 @@ fun NombreField(nombres: MutableState<String>) {
 fun ApellidoField(apellidos: MutableState<String>) {
     val errorMessage = remember { mutableStateOf("") }
 
-    TextField(
+    OutlinedTextField(
         value = apellidos.value,
         onValueChange = {
             apellidos.value = it
@@ -124,7 +129,8 @@ fun ApellidoField(apellidos: MutableState<String>) {
         label = { Text("Apellidos", fontSize = 12.sp) },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 0.dp),
+            .height(60.dp)
+            .padding(bottom = 1.dp),
         textStyle = TextStyle(fontSize = 14.sp),
         isError = errorMessage.value.isNotEmpty()
     )
@@ -144,7 +150,7 @@ fun CUIField(cui: MutableState<String>, municipio: MutableState<String>, departa
     val errorMessage = remember { mutableStateOf("") }
     val successMessage = remember { mutableStateOf("") }
 
-    TextField(
+    OutlinedTextField(
         value = cui.value,
         onValueChange = { newValue ->
             val cleanInput = newValue.filter { it.isDigit() || it.isWhitespace() }
@@ -154,6 +160,7 @@ fun CUIField(cui: MutableState<String>, municipio: MutableState<String>, departa
                 if (Validaciones.isValidCUI(cleanInput)) {
                     errorMessage.value = ""
                     successMessage.value = "CUI válido"
+
 
                     val infoMunicipioYDepartamento: ValidarCUI
                     infoMunicipioYDepartamento = ValidarCUI()
@@ -174,7 +181,9 @@ fun CUIField(cui: MutableState<String>, municipio: MutableState<String>, departa
             }
         },
         label = { Text("CUI", fontSize = 12.sp) },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(62.dp),
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
         isError = errorMessage.value.isNotEmpty()
     )
@@ -183,13 +192,14 @@ fun CUIField(cui: MutableState<String>, municipio: MutableState<String>, departa
         Text(
             text = errorMessage.value,
             color = MaterialTheme.colorScheme.error,
-            modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+            modifier = Modifier.padding(start = 16.dp, top = 2.dp)
         )
     } else if (successMessage.value.isNotEmpty()) {
         Text(
             text = successMessage.value,
             color = MaterialTheme.colorScheme.outline,
-            modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+            fontSize = 12.sp,
+            modifier = Modifier.padding(start = 16.dp, top = 2.dp)
         )
     }
 }
@@ -210,7 +220,7 @@ fun TelefonoField(telefono: MutableState<String>) {
                 .padding(top = 0.dp, bottom = 0.dp)
         )
 
-        TextField(
+        OutlinedTextField(
             value = telefono.value,
             onValueChange = { input ->
                 // Filtrar solo dígitos
@@ -239,6 +249,7 @@ fun TelefonoField(telefono: MutableState<String>) {
             label = { Text("Teléfono", fontSize = 12.sp) },
             modifier = Modifier
                 .fillMaxWidth()
+                .height(60.dp)
                 .padding(vertical = 0.dp),
             textStyle = TextStyle(fontSize = 14.sp),
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
@@ -258,13 +269,13 @@ fun TelefonoField(telefono: MutableState<String>) {
 
 @Composable
 fun DepartamentoField(departamento: MutableState<String>) {
-    TextField(
+    OutlinedTextField(
         value = departamento.value,
         onValueChange = { departamento.value = it },
         label = { Text("Departamento", fontSize = 12.sp) },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 0.dp, bottom = 0.dp),
+            .height(60.dp),
         textStyle = TextStyle(fontSize = 14.sp),
         readOnly = true
     )
@@ -272,13 +283,13 @@ fun DepartamentoField(departamento: MutableState<String>) {
 
 @Composable
 fun MunicipioField(municipio: MutableState<String>) {
-    TextField(
+    OutlinedTextField(
         value = municipio.value,
         onValueChange = { municipio.value = it },
         label = { Text("Municipio", fontSize = 12.sp) },
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 0.dp, bottom = 0.dp),
+            .height(60.dp),
         textStyle = TextStyle(fontSize = 14.sp),
         readOnly = true
     )
@@ -288,7 +299,7 @@ fun MunicipioField(municipio: MutableState<String>) {
 fun CorreoField(email: MutableState<String>){
     val errorMessage = remember { mutableStateOf("") }
 
-    TextField(
+    OutlinedTextField(
         value = email.value,
         onValueChange = { newValue ->
             email.value = newValue
@@ -302,6 +313,7 @@ fun CorreoField(email: MutableState<String>){
         label = { Text("Correo", fontSize = 12.sp) },
         modifier = Modifier
             .fillMaxWidth()
+            .height(60.dp)
             .padding(top = 0.dp, bottom = 0.dp),
         textStyle = TextStyle(fontSize = 14.sp),
         isError = errorMessage.value.isNotEmpty(),
@@ -320,7 +332,7 @@ fun CorreoField(email: MutableState<String>){
 
 @Composable
 fun ContrasenaField(contrasena: MutableState<String>) {
-    TextField(
+    OutlinedTextField(
         value = contrasena.value,  // Usar el valor del estado
         onValueChange = { newValue ->
             contrasena.value = newValue  // Actualizar el valor del estado con lo que se ingresa
@@ -328,6 +340,7 @@ fun ContrasenaField(contrasena: MutableState<String>) {
         label = { Text("Contraseña", fontSize = 12.sp) },
         modifier = Modifier
             .fillMaxWidth()
+            .height(60.dp)
             .padding(vertical = 0.dp),
         textStyle = TextStyle(fontSize = 12.sp),
         visualTransformation = PasswordVisualTransformation()  // Ocultar texto
@@ -379,40 +392,21 @@ fun RegisterUserButton(
                     }
                 }
             },
-            modifier = Modifier.width(200.dp),
+            modifier = Modifier.width(200.dp)
+            .height(55.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Magenta,
+                containerColor = Color.Blue,
                 contentColor = Color.White
             )
         ) {
             Text(
                 text = "Registrarme",
                 fontWeight = FontWeight.Bold,
-            )
-        }
-        Spacer(modifier = Modifier.height(2.dp))
-    }
-}
+                fontFamily = FontFamily.Serif,
+                fontSize = 16.sp
 
-@Composable
-fun RegisterUserButton(onClick: () -> Unit, function: () -> Boolean) {
-    Column(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Button(
-            onClick = onClick,
-            modifier = Modifier.width(200.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color.Magenta,
-                contentColor = Color.White
-            )
-        ) {
-            Text(
-                text = "Registrarme",
-                fontWeight = FontWeight.Bold,
             )
         }
-        Spacer(modifier = Modifier.height(2.dp))
+        Spacer(modifier = Modifier.height(1.dp))
     }
 }
