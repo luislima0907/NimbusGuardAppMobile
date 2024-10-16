@@ -1,6 +1,7 @@
 package com.crissnm.registrousuarios.Navegacion
 
 sealed class ManejoDeLasPantallasDeLaApp(val ruta: String) {
+    object PantallaDeBienvenida : ManejoDeLasPantallasDeLaApp("pantalla_bienvenida")
     object PantallaDeRegistro : ManejoDeLasPantallasDeLaApp("pantalla_registro")
     object PantallaDeLogin : ManejoDeLasPantallasDeLaApp("pantalla_login")
     object PantallaDeInicio : ManejoDeLasPantallasDeLaApp("pantalla_inicio")

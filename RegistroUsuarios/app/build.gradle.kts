@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.crissnm.registrousuarios"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.crissnm.registrousuarios"
@@ -50,7 +50,6 @@ android {
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -60,19 +59,13 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui.text.google.fonts)
-    implementation(libs.play.services.location)
-    //implementation(libs.play.services.location)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.runtime)
     implementation(libs.accompanist.permissions)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.storage)
-    //implementation(libs.accompanist.permissions.)
-    //implementation(libs.play.services.location)
-    //implementation(libs.androidx.navigation.compose)
-    //implementation(libs.google.accompanist.permissions.v0311alpha)
-    //implementation(libs.accompanist.permissions.v0311alpha)
-    //implementation(libs.)
+    implementation(libs.play.services.location)
+    implementation(libs.androidx.core.splashscreen)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -2,15 +2,12 @@ package com.crissnm.registrousuarios.PantallasDeLaApp
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,24 +23,37 @@ import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.android.gms.location.LocationServices
 
 @Composable
-fun PantallaDeInicio(navController: NavController) {
-    contenidoPantallaDeInicio(navController)
+fun PantallaDeInicio(
+    navController: NavController,
+    buttonStates: MutableMap<String, Boolean>,
+    onButtonStatusChange: (String, Boolean) -> Unit
+) {
+    contenidoPantallaDeInicio(
+        navController = navController,
+        buttonStates = buttonStates,
+        onButtonStatusChange = onButtonStatusChange
+    )
 }
-
 
 @OptIn(ExperimentalPermissionsApi::class)
 @SuppressLint("SuspiciousIndentation")
 @Composable
-fun contenidoPantallaDeInicio(navController: NavController) {
+fun contenidoPantallaDeInicio(
+    navController: NavController,
+    buttonStates: MutableMap<String, Boolean>,
+    onButtonStatusChange: (String, Boolean) -> Unit
+) {
     val context = LocalContext.current
     val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-    val permissionsState = rememberMultiplePermissionsState(permissions = listOf(Manifest.permission.ACCESS_FINE_LOCATION))
+    val permissionsState = rememberMultiplePermissionsState(
+        permissions = listOf(Manifest.permission.ACCESS_FINE_LOCATION)
+    )
 
     LaunchedEffect(Unit) {
         permissionsState.launchMultiplePermissionRequest()
     }
 
-    // Botones configurados
+    // Configuración de botones con identificadores únicos
     val buttonConfigs = listOf(
         ButtonBuilder()
             .setContainerColor(Color.Red)
@@ -112,19 +122,37 @@ fun contenidoPantallaDeInicio(navController: NavController) {
             .build()
     )
 
+    // Inicializar el estado de los botones si aún no se ha hecho
+    buttonConfigs.forEachIndexed { index, _ ->
+        val buttonId = "alertButton_$index" // ID único para cada botón
+        if (buttonStates[buttonId] == null) {
+            buttonStates[buttonId] = true // Habilitar por defecto
+        }
+    }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        buttonConfigs.forEach { buttonConfig ->
+        buttonConfigs.forEachIndexed { index, buttonConfig ->
+            val buttonId = "alertButton_$index" // ID único para cada botón
+            //var isButtonEnabled = false
+
             BotonDeAlerta(
                 navController = navController,
                 buttonConfig = buttonConfig,
                 fusedLocationClient = fusedLocationClient,
                 permissionsState = permissionsState,
-                context = context
+                context = context,
+                isButtonEnabled = buttonStates[buttonId] ?: true, // Verificar el estado del botón
+                onButtonStatusChange = { isEnabled ->
+                    buttonStates[buttonId] = isEnabled // Actualizar el estado del botón
+                    //Log.d("ButtonState", "Button $buttonId isEnabled: $isEnabled") // Log del estado
+                    onButtonStatusChange(buttonId, isEnabled) // Usar el ID como referencia
+                }
             )
         }
+
     }
 }

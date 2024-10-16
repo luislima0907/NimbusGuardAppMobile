@@ -4,6 +4,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 class ItemDeLaBarra(
     val texto: String,
-    val icono: ImageVector
+    val icono: ImageVector,
+    val contadorDeNotificaciones: Int
 ) {
 }

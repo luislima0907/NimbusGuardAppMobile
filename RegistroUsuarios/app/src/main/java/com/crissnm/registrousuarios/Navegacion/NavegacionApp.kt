@@ -1,9 +1,12 @@
 package com.crissnm.registrousuarios.Navegacion
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeBienvenida
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeInicio
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeLogin
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeNotificacion
@@ -11,14 +14,19 @@ import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDePerfil
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeRegistro
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDetalleDeLaAlerta
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaPrincipal
-import com.crissnm.registrousuarios.PantallasDeLaApp.barraDeNavegacionInferior
 
 @Composable
 fun navegacionDeLaApp() {
     val navController = rememberNavController()
-    NavHost(navController = navController, startDestination = ManejoDeLasPantallasDeLaApp.PantallaDeRegistro.ruta){
+
+    // Crear un mapa de estado para controlar la habilitación de los botones
+    val buttonStates = rememberSaveable { mutableStateOf(mutableMapOf<String, Boolean>()) }
+
+    NavHost(navController = navController, startDestination = ManejoDeLasPantallasDeLaApp.PantallaDeBienvenida.ruta) {
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaPrincipal.ruta) {
-            PantallaPrincipal(navController)
+            PantallaPrincipal(navController, buttonStates.value, onButtonStatusChange = { buttonId, isEnabled ->
+                buttonStates.value[buttonId] = isEnabled
+            })
         }
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaDeRegistro.ruta) {
             PantallaDeRegistro(navController)
@@ -27,9 +35,11 @@ fun navegacionDeLaApp() {
             PantallaDeLogin(navController)
         }
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaDeInicio.ruta) {
-            PantallaDeInicio(navController)
+            PantallaDeInicio(navController, buttonStates.value, onButtonStatusChange = { buttonId, isEnabled ->
+                buttonStates.value[buttonId.toString()] = isEnabled as Boolean
+            })
         }
-        composable(route = ManejoDeLasPantallasDeLaApp.PantallaDetalleDeLaAlerta.ruta){
+        composable(route = ManejoDeLasPantallasDeLaApp.PantallaDetalleDeLaAlerta.ruta) {
             PantallaDetalleDeLaAlerta(navController)
         }
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaDeNotificacion.ruta) {
@@ -37,6 +47,9 @@ fun navegacionDeLaApp() {
         }
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaDePerfil.ruta) {
             PantallaDePerfil(navController)
+        }
+        composable(route = ManejoDeLasPantallasDeLaApp.PantallaDeBienvenida.ruta){
+            PantallaDeBienvenida(navController)
         }
     }
 }

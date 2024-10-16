@@ -5,6 +5,7 @@ import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
@@ -26,40 +27,41 @@ fun BotonDeAlerta(
     buttonConfig: ButtonConfig,
     fusedLocationClient: FusedLocationProviderClient,
     permissionsState: MultiplePermissionsState,
-    context: Context
+    context: Context,
+    isButtonEnabled: Boolean, // Estado habilitado
+    onButtonStatusChange: (Boolean) -> Unit // Callback para cambiar el estado
 ) {
-    // Estado para controlar la habilitación/deshabilitación del botón
-    var isButtonEnabled by rememberSaveable { mutableStateOf(true) }
+
+    // Estado para el botón
+    var isButtonEnabled by rememberSaveable { mutableStateOf(isButtonEnabled) }
 
     // Estado para mostrar los diálogos
-    var showAlertDialog by remember { mutableStateOf(false) }
-    var showConfirmationDialog by remember { mutableStateOf(false) }
+    var showAlertDialog by rememberSaveable { mutableStateOf(false) }
+    var showConfirmationDialog by rememberSaveable { mutableStateOf(false) }
 
     // Estado para la ubicación
-    var latitud by remember { mutableStateOf(0.0) }
-    var longitud by remember { mutableStateOf(0.0) }
+    var latitud by rememberSaveable { mutableStateOf(0.0) }
+    var longitud by rememberSaveable { mutableStateOf(0.0) }
 
     // Botón de alerta
     Button(
         onClick = {
             if (isButtonEnabled) {
-                // Comprobar permisos y obtener la ubicación
                 if (permissionsState.allPermissionsGranted) {
                     getCurrentLocation(fusedLocationClient) { lat, lon ->
                         latitud = lat
                         longitud = lon
-                        // Mostrar la ubicación en un Toast
                         Toast.makeText(context, "Latitud: $lat, Longitud: $lon", Toast.LENGTH_SHORT).show()
-
-                        // Mostramos el diálogo para ingresar detalles
                         showAlertDialog = true
                     }
                 } else {
                     Toast.makeText(context, "Permiso de ubicación no concedido.", Toast.LENGTH_SHORT).show()
                 }
+            } else {
+                Toast.makeText(context, "Este botón está deshabilitado hasta que atendamos tu caso.", Toast.LENGTH_SHORT).show()
             }
         },
-        enabled = isButtonEnabled, // Control del estado del botón
+        enabled = isButtonEnabled, // Usa el estado pasado
         colors = ButtonDefaults.buttonColors(
             containerColor = buttonConfig.containerColor,
             contentColor = buttonConfig.contentColor
@@ -89,7 +91,7 @@ fun BotonDeAlerta(
             longitud = longitud,
             onSend = {
                 showAlertDialog = false
-                showConfirmationDialog = true // Muestra el segundo diálogo
+                showConfirmationDialog = true
             },
             onDismiss = { showAlertDialog = false }
         )
@@ -100,11 +102,14 @@ fun BotonDeAlerta(
         showConfirmationDialog(
             onAccept = {
                 showConfirmationDialog = false
-                isButtonEnabled = false // Deshabilitar el botón tras enviar la alerta
+                isButtonEnabled = false
+                onButtonStatusChange(isButtonEnabled) // Deshabilitar el botón tras enviar la alerta
             }
         )
     }
 }
+
+
 
 @Composable
 fun showAlertInputDialog(
@@ -115,13 +120,13 @@ fun showAlertInputDialog(
 ) {
     var alertDetails by remember { mutableStateOf("") }
 
-    androidx.compose.material3.AlertDialog(
+    AlertDialog(
         onDismissRequest = { onDismiss() },
         title = { Text(text = "Alerta Recibida!") },
         text = {
             Column {
                 Text("Latitud: $latitud, Longitud: $longitud") // Mostrar ubicación
-                Text("Puedes darnos más detalles sobre la situación?")
+                Text("¿Puedes darnos más detalles sobre la situación?")
                 Spacer(modifier = Modifier.height(8.dp))
                 androidx.compose.material3.OutlinedTextField(
                     value = alertDetails,
@@ -146,10 +151,11 @@ fun showAlertInputDialog(
 
 @Composable
 fun showConfirmationDialog(onAccept: () -> Unit) {
-    androidx.compose.material3.AlertDialog(
+    AlertDialog(
         onDismissRequest = { },
         title = { Text(text = "Información Enviada") },
-        text = { Text("Información enviada con éxito, revisa el apartado de notificaciones para tener información sobre el estado de tu alerta.") },
+        text = { Text("Información enviada con éxito, revisa el apartado de notificaciones para tener información sobre el estado de tu alerta." +
+                "\nNOTA: No podrás volver a enviar esta misma alerta hasta que atendamos tu caso, esperamos su comprensión.") },
         confirmButton = {
             Button(onClick = { onAccept() }) {
                 Text("Aceptar")
@@ -167,4 +173,4 @@ private fun getCurrentLocation(fusedLocationClient: FusedLocationProviderClient,
             onLocationResult(0.0, 0.0)
         }
     }
-}    
+}
