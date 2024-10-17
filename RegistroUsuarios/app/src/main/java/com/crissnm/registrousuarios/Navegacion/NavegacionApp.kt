@@ -6,6 +6,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.crissnm.registrousuarios.ManejoDeUsuarios.User
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeBienvenida
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeInicio
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeLogin
@@ -32,7 +33,7 @@ fun navegacionDeLaApp() {
             PantallaDeRegistro(navController)
         }
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaDeLogin.ruta) {
-            PantallaDeLogin(navController)
+            PantallaDeLogin(navController = navController, users = listOf()) // Lista vacía para usuarios
         }
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaDeInicio.ruta) {
             PantallaDeInicio(navController, buttonStates.value, onButtonStatusChange = { buttonId, isEnabled ->
@@ -46,7 +47,17 @@ fun navegacionDeLaApp() {
             PantallaDeNotificacion(navController)
         }
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaDePerfil.ruta) {
-            PantallaDePerfil(navController)
+            val mockUser = User(
+                nombres = "Juan",
+                apellidos = "Pérez",
+                cui = "123456789012",
+                telefono = "1234 5678",
+                departamento = "Guatemala",
+                municipio = "Ciudad",
+                correo = "juan.perez@example.com",
+                contrasena = "password123"
+            )
+            PantallaDePerfil(navController = navController,user = mockUser) // Pasando el usuario simulado
         }
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaDeBienvenida.ruta){
             PantallaDeBienvenida(navController)

@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.crissnm.registrousuarios.Componentes.Inicio.ItemDeLaBarra
+import com.crissnm.registrousuarios.ManejoDeUsuarios.User
 import com.crissnm.registrousuarios.R
 
 @Composable
@@ -153,7 +154,20 @@ fun contenidoDeLaBarraDeNavegacionInferior(
             buttonStates = buttonStates,
             onButtonStatusChange = onButtonStatusChange
         )
-        1 -> PantallaDePerfil(navController)
+        1 -> {
+            val mockUser = User(
+                nombres = "",
+                apellidos = "",
+                cui = "",
+                telefono = "",
+                departamento = "",
+                municipio = "",
+                correo = "",
+                contrasena = ""
+            )
+            PantallaDePerfil(navController = navController, user = mockUser) // Pasando el usuario simulado
+        }
+        //1 -> PantallaDePerfil(navController)
         2 -> PantallaDeNotificacion(navController)
     }
 }
