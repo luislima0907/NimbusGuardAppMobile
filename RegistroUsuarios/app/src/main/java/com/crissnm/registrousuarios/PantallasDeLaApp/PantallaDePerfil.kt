@@ -29,11 +29,11 @@ fun contenidoPantallaDePerfil(navController: NavController, user: User) {
     val context = LocalContext.current
 
     // Campos editables con la información del usuario
-    var nombres by remember { mutableStateOf(user.nombres) }
-    var apellidos by remember { mutableStateOf(user.apellidos) }
-    var telefono by remember { mutableStateOf(user.telefono) }
-    var correo by remember { mutableStateOf(user.correo) }
-    var contrasena by remember { mutableStateOf(user.contrasena) }
+    var nombres by remember { mutableStateOf(user.name) }
+    var apellidos by remember { mutableStateOf(user.lastname) }
+    var telefono by remember { mutableStateOf(user.number) }
+    var correo by remember { mutableStateOf(user.email) }
+    var contrasena by remember { mutableStateOf(user.password) }
 
     // Estados para el temporizador y control de eliminación
     var showDeleteConfirmation by remember { mutableStateOf(false) } // Muestra el diálogo de confirmación

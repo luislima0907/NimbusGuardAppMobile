@@ -3,9 +3,11 @@ package com.crissnm.registrousuarios.Navegacion
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.crissnm.registrousuarios.ManejoDeUsuarios.User
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeBienvenida
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeInicio
@@ -24,7 +26,8 @@ fun navegacionDeLaApp() {
     val buttonStates = rememberSaveable { mutableStateOf(mutableMapOf<String, Boolean>()) }
 
     NavHost(navController = navController, startDestination = ManejoDeLasPantallasDeLaApp.PantallaDeBienvenida.ruta) {
-        composable(route = ManejoDeLasPantallasDeLaApp.PantallaPrincipal.ruta) {
+        composable(route = ManejoDeLasPantallasDeLaApp.PantallaPrincipal.ruta + "/{uid}",
+            arguments = listOf(navArgument("uid") { type = NavType.StringType })) {
             PantallaPrincipal(navController, buttonStates.value, onButtonStatusChange = { buttonId, isEnabled ->
                 buttonStates.value[buttonId] = isEnabled
             })
@@ -35,7 +38,10 @@ fun navegacionDeLaApp() {
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaDeLogin.ruta) {
             PantallaDeLogin(navController = navController, users = listOf()) // Lista vacía para usuarios
         }
-        composable(route = ManejoDeLasPantallasDeLaApp.PantallaDeInicio.ruta) {
+        composable(
+            route = ManejoDeLasPantallasDeLaApp.PantallaDeInicio.ruta + "/{uid}",
+            arguments = listOf(navArgument("uid") { type = NavType.StringType })
+        ) {
             PantallaDeInicio(navController, buttonStates.value, onButtonStatusChange = { buttonId, isEnabled ->
                 buttonStates.value[buttonId.toString()] = isEnabled as Boolean
             })
@@ -47,17 +53,18 @@ fun navegacionDeLaApp() {
             PantallaDeNotificacion(navController)
         }
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaDePerfil.ruta) {
-            val mockUser = User(
-                nombres = "Juan",
-                apellidos = "Pérez",
-                cui = "123456789012",
-                telefono = "1234 5678",
-                departamento = "Guatemala",
-                municipio = "Ciudad",
-                correo = "juan.perez@example.com",
-                contrasena = "password123"
+            val newUser = User(
+                uid = "",
+                name = "",
+                lastname = "",
+                email = "",
+                password = "",
+                cui = "",
+                number = "",
+                department = "",
+                municipality = ""
             )
-            PantallaDePerfil(navController = navController,user = mockUser) // Pasando el usuario simulado
+            PantallaDePerfil(navController = navController,user = newUser) // Pasando el usuario simulado
         }
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaDeBienvenida.ruta){
             PantallaDeBienvenida(navController)

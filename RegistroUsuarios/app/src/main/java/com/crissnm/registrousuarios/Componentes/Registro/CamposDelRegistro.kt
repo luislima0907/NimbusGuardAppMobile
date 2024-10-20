@@ -1,5 +1,6 @@
 package com.crissnm.registrousuarios.Componentes.Registro
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -362,44 +363,21 @@ fun RegisterUserButton(
     apellidos: MutableState<String>,
     cui: MutableState<String>,
     telefono: MutableState<String>,
+    departamento: MutableState<String>,
+    municipio: MutableState<String>,
     email: MutableState<String>,
     contrasena: MutableState<String>,
     onClick: () -> Unit
 ) {
     val context = LocalContext.current
-
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
             onClick = {
-                // Verificación de campos vacíos
-                when {
-                    nombres.value.isBlank() -> {
-                        Toast.makeText(context, "El campo de nombres está vacío", Toast.LENGTH_SHORT).show()
-                    }
-                    apellidos.value.isBlank() -> {
-                        Toast.makeText(context, "El campo de apellidos está vacío", Toast.LENGTH_SHORT).show()
-                    }
-                    cui.value.isBlank() -> {
-                        Toast.makeText(context, "El campo de CUI está vacío", Toast.LENGTH_SHORT).show()
-                    }
-                    telefono.value.isBlank() -> {
-                        Toast.makeText(context, "El campo de teléfono está vacío", Toast.LENGTH_SHORT).show()
-                    }
-                    email.value.isBlank() -> {
-                        Toast.makeText(context, "El campo de correo está vacío", Toast.LENGTH_SHORT).show()
-                    }
-                    contrasena.value.isBlank() -> {
-                        Toast.makeText(context, "El campo de contraseña está vacío", Toast.LENGTH_SHORT).show()
-                    }
-                    else -> {
-                        // Si todo está completo, mostrar registro exitoso y ejecutar la acción
-                        Toast.makeText(context, "Registro exitoso", Toast.LENGTH_SHORT).show()
-                        onClick()
-                    }
-                }
+                ValidarCampos(nombres, apellidos, cui, telefono, departamento, municipio, email, contrasena, context)
+                onClick()
             },
             modifier = Modifier.width(200.dp)
             .height(55.dp),
@@ -417,5 +395,49 @@ fun RegisterUserButton(
             )
         }
         Spacer(modifier = Modifier.height(1.dp))
+    }
+}
+
+
+fun ValidarCampos(
+    nombres: MutableState<String>,
+    apellidos: MutableState<String>,
+    cui: MutableState<String>,
+    telefono: MutableState<String>,
+    departamento: MutableState<String>,
+    municipio: MutableState<String>,
+    email: MutableState<String>,
+    contrasena: MutableState<String>,
+    context: Context
+){
+            // Validar nombre
+            if (!Validaciones.isValidName(nombres.value) || nombres.value.isBlank()) {
+                Toast.makeText(context, "Nombre inválido", Toast.LENGTH_SHORT).show()
+            }
+
+    if (!Validaciones.isValidName(apellidos.value) || apellidos.value.isBlank()) {
+        Toast.makeText(context, "Apellido inválido", Toast.LENGTH_SHORT).show()
+    }
+            // Validar teléfono
+            if (!Validaciones.isValidPhone(telefono.value) || telefono.value.isBlank()) {
+                Toast.makeText(context, "Teléfono inválido (Formato: 1234 5678)", Toast.LENGTH_SHORT).show()
+            }
+
+            // Validar correo
+            if (!Validaciones.isValidCorreo(email.value) || email.value.isBlank()) {
+                Toast.makeText(context, "Correo inválido", Toast.LENGTH_SHORT).show()
+            }
+
+    if (contrasena.value.isBlank()) {
+        Toast.makeText(context, "Contraseña inválida", Toast.LENGTH_SHORT).show()
+    }
+
+            // Validar CUI
+            if (!Validaciones.isValidCUI(cui.value) || cui.value.isBlank()) {
+                Toast.makeText(context, "CUI inválido", Toast.LENGTH_SHORT).show()
+            }
+
+    if (departamento.value.isBlank() || municipio.value.isBlank()) {
+        Toast.makeText(context, "Departamento o Municipio inválido", Toast.LENGTH_SHORT).show()
     }
 }

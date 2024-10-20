@@ -155,17 +155,18 @@ fun contenidoDeLaBarraDeNavegacionInferior(
             onButtonStatusChange = onButtonStatusChange
         )
         1 -> {
-            val mockUser = User(
-                nombres = "",
-                apellidos = "",
+            val newUser = User(
+                uid = "",
+                name = "",
+                lastname = "",
+                email = "",
+                password = "",
                 cui = "",
-                telefono = "",
-                departamento = "",
-                municipio = "",
-                correo = "",
-                contrasena = ""
+                number = "",
+                department = "",
+                municipality = ""
             )
-            PantallaDePerfil(navController = navController, user = mockUser) // Pasando el usuario simulado
+            PantallaDePerfil(navController = navController, user = newUser) // Pasando el usuario simulado
         }
         //1 -> PantallaDePerfil(navController)
         2 -> PantallaDeNotificacion(navController)

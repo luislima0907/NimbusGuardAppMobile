@@ -2,7 +2,9 @@ package com.crissnm.registrousuarios.Componentes.Inicio
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.AlertDialog
@@ -16,13 +18,19 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import com.crissnm.registrousuarios.ManejoDeUsuarios.UserAuthService
+import com.crissnm.registrousuarios.ManejoDeUsuarios.UserFireStoreService
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.android.gms.location.FusedLocationProviderClient
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun BotonDeAlerta(
+    id:String,
     navController: NavController,
     buttonConfig: ButtonConfig,
     fusedLocationClient: FusedLocationProviderClient,
@@ -34,7 +42,6 @@ fun BotonDeAlerta(
 
     // Estado para el botón
     var isButtonEnabled by rememberSaveable { mutableStateOf(isButtonEnabled) }
-
     // Estado para mostrar los diálogos
     var showAlertDialog by rememberSaveable { mutableStateOf(false) }
     var showConfirmationDialog by rememberSaveable { mutableStateOf(false) }
@@ -89,6 +96,7 @@ fun BotonDeAlerta(
         showAlertInputDialog(
             latitud = latitud,
             longitud = longitud,
+            uid = id,
             onSend = {
                 showAlertDialog = false
                 showConfirmationDialog = true
@@ -109,12 +117,12 @@ fun BotonDeAlerta(
     }
 }
 
-
-
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun showAlertInputDialog(
     latitud: Double,
     longitud: Double,
+    uid:String,
     onSend: () -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -137,7 +145,26 @@ fun showAlertInputDialog(
             }
         },
         confirmButton = {
-            Button(onClick = { onSend() }) {
+            Button(onClick = {
+                val fireStoreServiceAlert = FireStoreServiceAlert()
+                val userFireStoreService = UserFireStoreService()
+
+                val alert:Alert = Alert()
+                alert.latitude = latitud
+                alert.longitude = longitud
+
+                alert.date =LocalDateTime.now().toString()
+                userFireStoreService.getUserbyUid(uid) {user ->
+
+                    if (user != null) {
+                        alert.user = user
+                        fireStoreServiceAlert.saveAlertInFireStore(alert)
+                        onSend()
+                    }
+
+
+                }
+            }) {
                 Text("Enviar")
             }
         },

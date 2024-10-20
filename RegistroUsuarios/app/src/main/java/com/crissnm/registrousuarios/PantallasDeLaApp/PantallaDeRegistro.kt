@@ -13,7 +13,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -23,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import com.crissnm.registrousuarios.Componentes.Registro.ApellidoField
 import com.crissnm.registrousuarios.Componentes.Registro.CUIField
@@ -36,6 +36,7 @@ import com.crissnm.registrousuarios.Componentes.Registro.RegisterUserButton
 import com.crissnm.registrousuarios.Componentes.Registro.TelefonoField
 import com.crissnm.registrousuarios.Componentes.Registro.Titulo
 import com.crissnm.registrousuarios.ManejoDeUsuarios.User
+import com.crissnm.registrousuarios.ManejoDeUsuarios.UserAuthService
 import com.crissnm.registrousuarios.ManejoDeUsuarios.Validaciones
 import com.crissnm.registrousuarios.Navegacion.ManejoDeLasPantallasDeLaApp
 
@@ -52,7 +53,6 @@ fun RegistrationForm(navController: NavController) {
     val telefono = remember { mutableStateOf("") }
     val departamento = remember { mutableStateOf("") }
     val municipio = remember { mutableStateOf("") }
-    val users = remember { mutableStateListOf<User>() }
     val correo = remember { mutableStateOf("") }
     val contrasena = remember { mutableStateOf("") }
     val context = LocalContext.current
@@ -85,95 +85,23 @@ fun RegistrationForm(navController: NavController) {
 
         RegisterUserButton(
             onClick = {
-                // Verificar si algún campo está vacío antes de proceder
-                when {
-                    nombres.value.isBlank() -> {
-                        Toast.makeText(
-                            context,
-                            "El campo de nombres está vacío",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    apellidos.value.isBlank() -> {
-                        Toast.makeText(
-                            context,
-                            "El campo de apellidos está vacío",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    cui.value.isBlank() -> {
-                        Toast.makeText(context, "El campo de CUI está vacío", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                    telefono.value.isBlank() -> {
-                        Toast.makeText(
-                            context,
-                            "El campo de teléfono está vacío",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    correo.value.isBlank() -> {
-                        Toast.makeText(context, "El campo de correo está vacío", Toast.LENGTH_SHORT)
-                            .show()
-                    }
-                    contrasena.value.isBlank() -> {
-                        Toast.makeText(
-                            context,
-                            "El campo de contraseña está vacío",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                    }
-                    else -> {
-                        // Validar nombre
-                        if (!Validaciones.isValidName(nombres.value)) {
-                            Toast.makeText(context, "Nombre inválido", Toast.LENGTH_SHORT).show()
-                            return@RegisterUserButton
-                        }
-
-                        // Validar teléfono
-                        if (!Validaciones.isValidPhone(telefono.value)) {
-                            Toast.makeText(context, "Teléfono inválido (Formato: 1234 5678)", Toast.LENGTH_SHORT).show()
-                            return@RegisterUserButton
-                        }
-
-                        // Validar correo
-                        if (!Validaciones.isValidCorreo(correo.value)) {
-                            Toast.makeText(context, "Correo inválido", Toast.LENGTH_SHORT).show()
-                            return@RegisterUserButton
-                        }
-
-                        // Validar CUI
-                        if (!Validaciones.isValidCUI(cui.value)) {
-                            Toast.makeText(context, "CUI inválido", Toast.LENGTH_SHORT).show()
-                            return@RegisterUserButton
-                        }
-                        // Si todas las validaciones pasan, mostrar el diálogo de éxito
-                        showSuccessDialog.value = true
-                        val newUser = User(
-                            nombres.value,
-                            apellidos.value,
-                            cui.value,
-                            telefono.value,
-                            departamento.value,
-                            municipio.value,
-                            correo.value,
-                            contrasena.value
-                        )
-                        users.add(newUser)
-                    }
-                }
+                showSuccessDialog.value = true
             },
             nombres = nombres,
             apellidos = apellidos,
             cui = cui,
             telefono = telefono,
             email = correo,
-            contrasena = contrasena
+            contrasena = contrasena,
+            departamento = departamento,
+            municipio = municipio
         )
     }
 
+
     // Mostrar el diálogo si `showSuccessDialog` está en true
     if (showSuccessDialog.value) {
+
         AlertDialog(
             onDismissRequest = { showSuccessDialog.value = false },
             title = { Text(text = "Registro Exitoso!", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
@@ -192,8 +120,26 @@ fun RegistrationForm(navController: NavController) {
             confirmButton = {
                 Button(
                     onClick = {
+
                         showSuccessDialog.value = false
-                        navController.navigate(ManejoDeLasPantallasDeLaApp.PantallaPrincipal.ruta)
+                        val newUser = User(
+                            uid = "",
+                            name = nombres.value,
+                            lastname = apellidos.value,
+                            email = correo.value,
+                            password = contrasena.value,
+                            cui = cui.value,
+                            number = telefono.value,
+                            department = departamento.value,
+                            municipality = municipio.value
+                        )
+                        val userAuthService = UserAuthService()
+                        userAuthService.registerUser(context, newUser){uid ->
+                            if (uid!=null || uid!=""){
+                                navController.navigate(
+                                    "${ManejoDeLasPantallasDeLaApp.PantallaPrincipal.ruta}/$uid")
+                            }
+                        }
                     }
                 ) {
                     Text("Aceptar")
