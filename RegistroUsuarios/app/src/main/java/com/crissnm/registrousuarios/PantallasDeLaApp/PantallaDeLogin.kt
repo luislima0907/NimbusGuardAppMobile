@@ -12,10 +12,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.crissnm.registrousuarios.Componentes.Login.ContrasenaField
 import com.crissnm.registrousuarios.Componentes.Login.CorreoField
 import com.crissnm.registrousuarios.ManejoDeUsuarios.User
@@ -149,4 +151,57 @@ fun LoginForm(navController: NavController, users: List<User>) {
         )
     }
 }
+
+@Preview(showBackground = true)
+@Composable
+fun PreviewLoginForm() {
+    // Estados vacíos solo para ver los campos
+    val correo = remember { mutableStateOf("") }
+    val contrasena = remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(start = 20.dp, end = 20.dp, top = 90.dp, bottom = 10.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.spacedBy(10.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "Iniciar Sesión",
+            fontWeight = FontWeight.Bold,
+            fontSize = 27.sp,
+            color = Color.Black,
+            fontFamily = FontFamily.Serif
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Campos de texto para correo y contraseña
+        CorreoField(correo)
+        ContrasenaField(contrasena)
+
+        Spacer(modifier = Modifier.height(3.dp))
+
+        Button(
+            onClick = { /* Acción vacía para la vista previa */ },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(55.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color.Blue,  // Consistencia en el color del botón
+                contentColor = Color.White    // Texto blanco
+            )
+        ) {
+            Text(
+                text = "Iniciar Sesión",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp,
+                fontFamily = FontFamily.Serif
+            )
+        }
+    }
+}
+
+
 
