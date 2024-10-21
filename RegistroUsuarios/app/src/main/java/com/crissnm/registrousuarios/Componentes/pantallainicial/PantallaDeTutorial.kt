@@ -56,9 +56,7 @@ fun InstruccionesUso() {
         color = Color.Black,
         fontSize = 12.sp,
         fontFamily = FontFamily.Serif
-
     )
-
 }
 
 @Composable
@@ -95,9 +93,6 @@ fun ActionButtons() {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-
-
-
     ) {
         Button(
             onClick = { /* Acción de iniciar sesión */ },

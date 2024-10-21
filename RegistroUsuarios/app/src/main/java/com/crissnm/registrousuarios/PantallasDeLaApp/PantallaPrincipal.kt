@@ -168,7 +168,6 @@ fun contenidoDeLaBarraDeNavegacionInferior(
             )
             PantallaDePerfil(navController = navController, user = newUser) // Pasando el usuario simulado
         }
-        //1 -> PantallaDePerfil(navController)
         2 -> PantallaDeNotificacion(navController)
     }
 }

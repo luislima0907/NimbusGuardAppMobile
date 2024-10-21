@@ -1,5 +1,6 @@
 package com.crissnm.registrousuarios.PantallasDeLaApp
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -13,6 +14,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -35,6 +37,11 @@ import com.crissnm.registrousuarios.Componentes.Registro.NombreField
 import com.crissnm.registrousuarios.Componentes.Registro.RegisterUserButton
 import com.crissnm.registrousuarios.Componentes.Registro.TelefonoField
 import com.crissnm.registrousuarios.Componentes.Registro.Titulo
+import com.crissnm.registrousuarios.Componentes.Registro.validarApellido
+import com.crissnm.registrousuarios.Componentes.Registro.validarCUI
+import com.crissnm.registrousuarios.Componentes.Registro.validarCorreo
+import com.crissnm.registrousuarios.Componentes.Registro.validarNombre
+import com.crissnm.registrousuarios.Componentes.Registro.validarTelefono
 import com.crissnm.registrousuarios.ManejoDeUsuarios.User
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserAuthService
 import com.crissnm.registrousuarios.ManejoDeUsuarios.Validaciones
@@ -98,10 +105,8 @@ fun RegistrationForm(navController: NavController) {
         )
     }
 
-
     // Mostrar el diálogo si `showSuccessDialog` está en true
     if (showSuccessDialog.value) {
-
         AlertDialog(
             onDismissRequest = { showSuccessDialog.value = false },
             title = { Text(text = "Registro Exitoso!", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
@@ -120,25 +125,19 @@ fun RegistrationForm(navController: NavController) {
             confirmButton = {
                 Button(
                     onClick = {
-
-                        showSuccessDialog.value = false
-                        val newUser = User(
-                            uid = "",
-                            name = nombres.value,
-                            lastname = apellidos.value,
-                            email = correo.value,
-                            password = contrasena.value,
-                            cui = cui.value,
-                            number = telefono.value,
-                            department = departamento.value,
-                            municipality = municipio.value
-                        )
-                        val userAuthService = UserAuthService()
-                        userAuthService.registerUser(context, newUser){uid ->
-                            if (uid!=null || uid!=""){
-                                navController.navigate(
-                                    "${ManejoDeLasPantallasDeLaApp.PantallaPrincipal.ruta}/$uid")
-                            }
+                        handleUserRegistration(
+                            nombres.value,
+                            apellidos.value,
+                            cui.value,
+                            telefono.value,
+                            correo.value,
+                            contrasena.value,
+                            departamento.value,
+                            municipio.value,
+                            context,
+                            navController
+                        ) {
+                            showSuccessDialog.value = false
                         }
                     }
                 ) {
@@ -149,6 +148,44 @@ fun RegistrationForm(navController: NavController) {
         )
     }
 }
+
+fun handleUserRegistration(
+    nombres: String,
+    apellidos: String,
+    cui: String,
+    telefono: String,
+    correo: String,
+    contrasena: String,
+    departamento: String,
+    municipio: String,
+    context: Context,
+    navController: NavController,
+    onRegistrationComplete: () -> Unit
+) {
+    val newUser = User(
+        uid = "",
+        name = nombres,
+        lastname = apellidos,
+        email = correo,
+        password = contrasena,
+        cui = cui,
+        number = telefono,
+        department = departamento,
+        municipality = municipio
+    )
+
+    val userAuthService = UserAuthService()
+
+    userAuthService.registerUser(context, newUser) { uid ->
+        if (!uid.isNullOrEmpty()) {
+            navController.navigate(
+                "${ManejoDeLasPantallasDeLaApp.PantallaPrincipal.ruta}/$uid"
+            )
+        }
+        onRegistrationComplete() // Cerrar el diálogo después de la navegación
+    }
+}
+
 
 // Función para enmascarar parte de la información sensible
 fun maskField(field: String): String {

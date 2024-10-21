@@ -146,23 +146,8 @@ fun showAlertInputDialog(
         },
         confirmButton = {
             Button(onClick = {
-                val fireStoreServiceAlert = FireStoreServiceAlert()
-                val userFireStoreService = UserFireStoreService()
-
-                val alert:Alert = Alert()
-                alert.latitude = latitud
-                alert.longitude = longitud
-
-                alert.date =LocalDateTime.now().toString()
-                userFireStoreService.getUserbyUid(uid) {user ->
-
-                    if (user != null) {
-                        alert.user = user
-                        fireStoreServiceAlert.saveAlertInFireStore(alert)
-                        onSend()
-                    }
-
-
+                handleSendAlert(latitud, longitud, uid, alertDetails) {
+                    onSend()
                 }
             }) {
                 Text("Enviar")
@@ -175,6 +160,35 @@ fun showAlertInputDialog(
         }
     )
 }
+
+@RequiresApi(Build.VERSION_CODES.O)
+fun handleSendAlert(
+    latitud: Double,
+    longitud: Double,
+    uid: String,
+    alertDetails: String,
+    onSuccess: () -> Unit
+) {
+    val fireStoreServiceAlert = FireStoreServiceAlert()
+    val userFireStoreService = UserFireStoreService()
+    val alert = Alert().apply {
+        latitude = latitud
+        longitude = longitud
+        detail = alertDetails
+        typeAlert = ButtonConfig().title
+        date = LocalDateTime.now().toString()
+    }
+
+    // Obtener la información del usuario y guardar la alerta
+    userFireStoreService.getUserbyUid(uid) { user ->
+        if (user != null) {
+            alert.user = user
+            fireStoreServiceAlert.saveAlertInFireStore(alert)
+            onSuccess() // Notifica que la alerta fue enviada
+        }
+    }
+}
+
 
 @Composable
 fun showConfirmationDialog(onAccept: () -> Unit) {
