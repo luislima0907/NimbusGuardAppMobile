@@ -55,6 +55,7 @@ fun RegistrationForm(navController: NavController) {
     val municipio = remember { mutableStateOf("") }
     val correo = remember { mutableStateOf("") }
     val contrasena = remember { mutableStateOf("") }
+    val errorMessage = remember { mutableStateOf("") }
     val context = LocalContext.current
 
     // Estado para controlar el diálogo de éxito
@@ -79,7 +80,7 @@ fun RegistrationForm(navController: NavController) {
         DepartamentoField(departamento)
         MunicipioField(municipio)
         CorreoField(correo)
-        ContrasenaField(contrasena)
+        ContrasenaField(contrasena, errorMessage)
 
         Spacer(modifier = Modifier.height(3.dp))
 
