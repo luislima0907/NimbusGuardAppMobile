@@ -93,7 +93,7 @@ fun NombreField(nombres: MutableState<String>) {
         isError = errorMessage.value.isNotEmpty(),
         singleLine = true,
 
-    )
+        )
 
     if (errorMessage.value.isNotEmpty()) {
         Text(
@@ -347,11 +347,17 @@ fun validarCorreo(input: String, correo: MutableState<String>, errorMessage: Mut
 }
 
 @Composable
-fun ContrasenaField(contrasena: MutableState<String>) {
+fun ContrasenaField(contrasena: MutableState<String>, errorMessage: MutableState<String>) {
     OutlinedTextField(
-        value = contrasena.value,  // Usar el valor del estado
-        onValueChange = {
-            contrasena.value = it
+        value = contrasena.value,
+        onValueChange = { newValue ->
+            contrasena.value = newValue
+            // Validar longitud de la contraseña
+            if (newValue.length < 6) {
+                errorMessage.value = "La contraseña debe tener al menos 6 caracteres."
+            } else {
+                errorMessage.value = ""
+            }
         },
         label = { Text("Contraseña", fontSize = 12.sp) },
         modifier = Modifier
@@ -359,8 +365,19 @@ fun ContrasenaField(contrasena: MutableState<String>) {
             .height(60.dp)
             .padding(vertical = 0.dp),
         textStyle = TextStyle(fontSize = 12.sp),
-        visualTransformation = PasswordVisualTransformation()  // Ocultar texto
+        visualTransformation = PasswordVisualTransformation(),
+        isError = errorMessage.value.isNotEmpty()  // Activar estado de error
     )
+
+    // Mostrar el mensaje de error si existe
+    if (errorMessage.value.isNotEmpty()) {
+        Text(
+            text = errorMessage.value,
+            color = Color.Red,  // Color del mensaje de error
+            fontSize = 12.sp,
+            modifier = Modifier.padding(start = 16.dp)  // Ajusta el margen según sea necesario
+        )
+    }
 }
 
 @Composable
