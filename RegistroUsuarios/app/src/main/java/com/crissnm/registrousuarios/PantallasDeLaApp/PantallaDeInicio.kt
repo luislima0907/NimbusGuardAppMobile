@@ -142,7 +142,6 @@ fun contenidoPantallaDeInicio(
             val buttonId = "alertButton_$index" // ID único para cada botón
             //var isButtonEnabled = false
 
-
             BotonDeAlerta(
                 id = uid.toString(),
                 navController = navController,
@@ -158,6 +157,5 @@ fun contenidoPantallaDeInicio(
                 }
             )
         }
-
     }
 }

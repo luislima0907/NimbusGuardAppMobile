@@ -13,34 +13,26 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crissnm.registrousuarios.DepYmuni.ValidarCUI
@@ -89,14 +81,8 @@ fun NombreField(nombres: MutableState<String>) {
 
     OutlinedTextField(
         value = nombres.value,
-        onValueChange = {
-            nombres.value = it
-
-            errorMessage.value = when {
-                it.isBlank() -> "El campo de nombres es obligatorio."
-                !Validaciones.isValidName(it) -> "El nombre debe comenzar con una letra mayúscula y solo contener letras, no admite otros caracteres."
-                else -> ""
-            }
+        onValueChange = { newValue ->
+            validarNombre(newValue, nombres, errorMessage)
         },
         label = { Text("Nombres", fontSize = 12.sp) },
         modifier = Modifier
@@ -107,7 +93,7 @@ fun NombreField(nombres: MutableState<String>) {
         isError = errorMessage.value.isNotEmpty(),
         singleLine = true,
 
-    )
+        )
 
     if (errorMessage.value.isNotEmpty()) {
         Text(
@@ -119,20 +105,23 @@ fun NombreField(nombres: MutableState<String>) {
     }
 }
 
+fun validarNombre(input: String, nombres: MutableState<String>, errorMessage: MutableState<String>) {
+    nombres.value = input
+    errorMessage.value = when {
+        input.isBlank() -> "El campo de nombres es obligatorio."
+        !Validaciones.isValidName(input) -> "El nombre debe comenzar con una letra mayúscula y solo contener letras, no admite otros caracteres."
+        else -> ""
+    }
+}
+
 @Composable
 fun ApellidoField(apellidos: MutableState<String>) {
     val errorMessage = remember { mutableStateOf("") }
 
     OutlinedTextField(
         value = apellidos.value,
-        onValueChange = {
-            apellidos.value = it
-
-            errorMessage.value = when {
-                it.isBlank() -> "El campo de apellidos es obligatorio."
-                !Validaciones.isValidName(it) -> "El apellido debe comenzar con una letra mayúscula y solo contener letras, no admite otros caracteres."
-                else -> ""
-            }
+        onValueChange = { newValue ->
+            validarApellido(newValue, apellidos, errorMessage)
         },
         label = { Text("Apellidos", fontSize = 12.sp) },
         modifier = Modifier
@@ -153,6 +142,15 @@ fun ApellidoField(apellidos: MutableState<String>) {
     }
 }
 
+fun validarApellido(input: String, apellidos: MutableState<String>, errorMessage: MutableState<String>) {
+    apellidos.value = input
+    errorMessage.value = when {
+        input.isBlank() -> "El campo de apellidos es obligatorio."
+        !Validaciones.isValidName(input) -> "El apellido debe comenzar con una letra mayúscula y solo contener letras, no admite otros caracteres."
+        else -> ""
+    }
+}
+
 @Composable
 fun CUIField(cui: MutableState<String>, municipio: MutableState<String>, departamento: MutableState<String>) {
     val errorMessage = remember { mutableStateOf("") }
@@ -161,32 +159,7 @@ fun CUIField(cui: MutableState<String>, municipio: MutableState<String>, departa
     OutlinedTextField(
         value = cui.value,
         onValueChange = { newValue ->
-            val cleanInput = newValue.filter { it.isDigit() || it.isWhitespace() }
-            cui.value = cleanInput
-
-            if (cleanInput.isNotEmpty()) {
-                if (Validaciones.isValidCUI(cleanInput)) {
-                    errorMessage.value = ""
-                    successMessage.value = "CUI válido"
-
-
-                    val infoMunicipioYDepartamento: ValidarCUI
-                    infoMunicipioYDepartamento = ValidarCUI()
-                    val (muni, depto) = infoMunicipioYDepartamento.obtenerMunicipioYDepartamento(cleanInput)
-                    municipio.value = muni
-                    departamento.value = depto
-                } else {
-                    errorMessage.value = "Formato incorrecto o código inválido"
-                    successMessage.value = ""
-                    municipio.value = ""
-                    departamento.value = ""
-                }
-            } else {
-                errorMessage.value = "El campo de CUI es obligatorio."
-                successMessage.value = ""
-                municipio.value = ""
-                departamento.value = ""
-            }
+            validarCUI(newValue, cui, municipio, departamento, errorMessage, successMessage)
         },
         label = { Text("CUI", fontSize = 12.sp) },
         modifier = Modifier
@@ -212,6 +185,40 @@ fun CUIField(cui: MutableState<String>, municipio: MutableState<String>, departa
     }
 }
 
+fun validarCUI(
+    input: String,
+    cui: MutableState<String>,
+    municipio: MutableState<String>,
+    departamento: MutableState<String>,
+    errorMessage: MutableState<String>,
+    successMessage: MutableState<String>
+) {
+    val cleanInput = input.filter { it.isDigit() || it.isWhitespace() }
+    cui.value = cleanInput
+
+    if (cleanInput.isNotEmpty()) {
+        if (Validaciones.isValidCUI(cleanInput)) {
+            errorMessage.value = ""
+            successMessage.value = "CUI válido"
+
+            val infoMunicipioYDepartamento = ValidarCUI()
+            val (muni, depto) = infoMunicipioYDepartamento.obtenerMunicipioYDepartamento(cleanInput)
+            municipio.value = muni
+            departamento.value = depto
+        } else {
+            errorMessage.value = "Formato incorrecto o código inválido"
+            successMessage.value = ""
+            municipio.value = ""
+            departamento.value = ""
+        }
+    } else {
+        errorMessage.value = "El campo de CUI es obligatorio."
+        successMessage.value = ""
+        municipio.value = ""
+        departamento.value = ""
+    }
+}
+
 @Composable
 fun TelefonoField(telefono: MutableState<String>) {
     val errorMessage = remember { mutableStateOf("") }
@@ -230,29 +237,8 @@ fun TelefonoField(telefono: MutableState<String>) {
 
         OutlinedTextField(
             value = telefono.value,
-            onValueChange = { input ->
-                // Filtrar solo dígitos
-                val cleanInput = input.filter { it.isDigit() }
-
-                // Limitar a 8 dígitos
-                val limitedInput = if (cleanInput.length > 8) cleanInput.substring(0, 8) else cleanInput
-
-                // Formatear solo si se han ingresado los 8 dígitos completos
-                val formattedInput = if (limitedInput.length == 8) {
-                    "${limitedInput.substring(0, 4)} ${limitedInput.substring(4)}"
-                } else {
-                    limitedInput
-                }
-
-                telefono.value = formattedInput
-
-                // Validar el formato del teléfono
-                errorMessage.value = when {
-                    formattedInput.isBlank() -> "El campo de teléfono es obligatorio."
-                    !Validaciones.isValidPhone(formattedInput) ->
-                        "Número de teléfono inválido, debe tener el formato: 0000 0000."
-                    else -> ""
-                }
+            onValueChange = { newValue ->
+                validarTelefono(newValue, telefono, errorMessage)
             },
             label = { Text("Teléfono", fontSize = 12.sp) },
             modifier = Modifier
@@ -275,7 +261,24 @@ fun TelefonoField(telefono: MutableState<String>) {
     }
 }
 
+fun validarTelefono(input: String, telefono: MutableState<String>, errorMessage: MutableState<String>) {
+    val cleanInput = input.filter { it.isDigit() }
+    val limitedInput = if (cleanInput.length > 8) cleanInput.substring(0, 8) else cleanInput
 
+    val formattedInput = if (limitedInput.length == 8) {
+        "${limitedInput.substring(0, 4)} ${limitedInput.substring(4)}"
+    } else {
+        limitedInput
+    }
+
+    telefono.value = formattedInput
+
+    errorMessage.value = when {
+        formattedInput.isBlank() -> "El campo de teléfono es obligatorio."
+        !Validaciones.isValidPhone(formattedInput) -> "Número de teléfono inválido, debe tener el formato: 0000 0000."
+        else -> ""
+    }
+}
 
 @Composable
 fun DepartamentoField(departamento: MutableState<String>) {
@@ -312,13 +315,7 @@ fun CorreoField(email: MutableState<String>){
     OutlinedTextField(
         value = email.value,
         onValueChange = { newValue ->
-            email.value = newValue
-
-            errorMessage.value = when {
-                newValue.isBlank() -> "El campo de correo es obligatorio."
-                !Validaciones.isValidCorreo(newValue) -> "Correo electrónico inválido."
-                else -> ""
-            }
+            validarCorreo(newValue, email, errorMessage)
         },
         label = { Text("Correo", fontSize = 12.sp) },
         modifier = Modifier
@@ -340,18 +337,21 @@ fun CorreoField(email: MutableState<String>){
     }
 }
 
+fun validarCorreo(input: String, correo: MutableState<String>, errorMessage: MutableState<String>) {
+    correo.value = input
+    errorMessage.value = when {
+        input.isBlank() -> "El campo de correo es obligatorio."
+        !Validaciones.isValidCorreo(input) -> "Correo electrónico inválido."
+        else -> ""
+    }
+}
+
 @Composable
 fun ContrasenaField(contrasena: MutableState<String>, errorMessage: MutableState<String>) {
     OutlinedTextField(
         value = contrasena.value,
         onValueChange = { newValue ->
-            contrasena.value = newValue
-            // Validar longitud de la contraseña
-            if (newValue.length < 6) {
-                errorMessage.value = "La contraseña debe tener al menos 6 caracteres."
-            } else {
-                errorMessage.value = ""
-            }
+            actualizarContrasena(newValue, contrasena, errorMessage)  // Llama a la función para actualizar y validar
         },
         label = { Text("Contraseña", fontSize = 12.sp) },
         modifier = Modifier
@@ -374,6 +374,22 @@ fun ContrasenaField(contrasena: MutableState<String>, errorMessage: MutableState
     }
 }
 
+// Función para actualizar el valor de la contraseña y validar
+fun actualizarContrasena(
+    newValue: String,
+    contrasena: MutableState<String>,
+    errorMessage: MutableState<String>
+) {
+    contrasena.value = newValue
+    // Validar longitud de la contraseña
+    if (newValue.length < 6) {
+        errorMessage.value = "La contraseña debe tener al menos 6 caracteres."
+    } else {
+        errorMessage.value = ""
+    }
+}
+
+
 @Composable
 fun RegisterUserButton(
     nombres: MutableState<String>,
@@ -387,74 +403,97 @@ fun RegisterUserButton(
     onClick: () -> Unit
 ) {
     val context = LocalContext.current
+
+    // Estado de los mensajes de error
+    val nombreError = remember { mutableStateOf("") }
+    val apellidoError = remember { mutableStateOf("") }
+    val cuiError = remember { mutableStateOf("") }
+    val telefonoError = remember { mutableStateOf("") }
+    val emailError = remember { mutableStateOf("") }
+    val contrasenaError = remember { mutableStateOf("") }
+
+    // Verificar si todos los campos son válidos
+    val isFormValid = esFormularioValido(
+        nombres.value,
+        apellidos.value,
+        cui.value,
+        telefono.value,
+        email.value,
+        contrasena.value,
+        nombreError,
+        apellidoError,
+        cuiError,
+        telefonoError,
+        emailError,
+        contrasenaError,
+        municipio,
+        departamento
+    )
+
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
             onClick = {
-                ValidarCampos(nombres, apellidos, cui, telefono, departamento, municipio, email, contrasena, context)
-                onClick()
+                if (isFormValid) {
+                    onClick()  // Solo permite continuar si el formulario es válido
+                } else {
+                    Toast.makeText(context, "Revisa los campos con errores", Toast.LENGTH_LONG).show()
+                }
             },
-            modifier = Modifier.width(200.dp)
-            .height(55.dp),
+            modifier = Modifier
+                .width(200.dp)
+                .height(55.dp),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Blue,
                 contentColor = Color.White
-            )
+            ),
+            enabled = isFormValid  // Habilitar/deshabilitar el botón
         ) {
             Text(
                 text = "Registrarme",
                 fontWeight = FontWeight.Bold,
                 fontFamily = FontFamily.Serif,
                 fontSize = 16.sp
-
             )
         }
         Spacer(modifier = Modifier.height(1.dp))
     }
 }
 
-
-fun ValidarCampos(
-    nombres: MutableState<String>,
-    apellidos: MutableState<String>,
-    cui: MutableState<String>,
-    telefono: MutableState<String>,
-    departamento: MutableState<String>,
+fun esFormularioValido(
+    nombres: String,
+    apellidos: String,
+    cui: String,
+    telefono: String,
+    email: String,
+    contrasena: String,
+    nombreError: MutableState<String>,
+    apellidoError: MutableState<String>,
+    cuiError: MutableState<String>,
+    telefonoError: MutableState<String>,
+    emailError: MutableState<String>,
+    contrasenaError: MutableState<String>,
     municipio: MutableState<String>,
-    email: MutableState<String>,
-    contrasena: MutableState<String>,
-    context: Context
-){
-            // Validar nombre
-            if (!Validaciones.isValidName(nombres.value) || nombres.value.isBlank()) {
-                Toast.makeText(context, "Nombre inválido", Toast.LENGTH_SHORT).show()
-            }
+    departamento: MutableState<String>
+): Boolean {
+    validarNombre(nombres, mutableStateOf(nombres), nombreError)
+    validarApellido(apellidos, mutableStateOf(apellidos), apellidoError)
+    validarCUI(cui, mutableStateOf(cui), municipio, departamento, cuiError, mutableStateOf(""))
+    validarTelefono(telefono, mutableStateOf(telefono), telefonoError)
+    validarCorreo(email, mutableStateOf(email), emailError)
+    actualizarContrasena(contrasena, mutableStateOf(contrasena), contrasenaError)
 
-    if (!Validaciones.isValidName(apellidos.value) || apellidos.value.isBlank()) {
-        Toast.makeText(context, "Apellido inválido", Toast.LENGTH_SHORT).show()
-    }
-            // Validar teléfono
-            if (!Validaciones.isValidPhone(telefono.value) || telefono.value.isBlank()) {
-                Toast.makeText(context, "Teléfono inválido (Formato: 1234 5678)", Toast.LENGTH_SHORT).show()
-            }
-
-            // Validar correo
-            if (!Validaciones.isValidCorreo(email.value) || email.value.isBlank()) {
-                Toast.makeText(context, "Correo inválido", Toast.LENGTH_SHORT).show()
-            }
-
-    if (contrasena.value.isBlank()) {
-        Toast.makeText(context, "Contraseña inválida", Toast.LENGTH_SHORT).show()
-    }
-
-            // Validar CUI
-            if (!Validaciones.isValidCUI(cui.value) || cui.value.isBlank()) {
-                Toast.makeText(context, "CUI inválido", Toast.LENGTH_SHORT).show()
-            }
-
-    if (departamento.value.isBlank() || municipio.value.isBlank()) {
-        Toast.makeText(context, "Departamento o Municipio inválido", Toast.LENGTH_SHORT).show()
-    }
+    return nombreError.value.isEmpty() &&
+            apellidoError.value.isEmpty() &&
+            cuiError.value.isEmpty() &&
+            telefonoError.value.isEmpty() &&
+            emailError.value.isEmpty() &&
+            nombres.isNotBlank() &&
+            apellidos.isNotBlank() &&
+            cui.isNotBlank() &&
+            telefono.isNotBlank() &&
+            email.isNotBlank() &&
+            contrasena.isNotBlank()
 }

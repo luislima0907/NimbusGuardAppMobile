@@ -170,7 +170,6 @@ fun contenidoDeLaBarraDeNavegacionInferior(
             val authService = UserAuthService()
             PantallaDePerfil(navController = navController, user = newUser, authService = authService)
         }
-        //1 -> PantallaDePerfil(navController)
         2 -> PantallaDeNotificacion(navController)
     }
 }

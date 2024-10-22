@@ -57,9 +57,7 @@ fun InstruccionesUso() {
         color = Color.Black,
         fontSize = 12.sp,
         fontFamily = FontFamily.Serif
-
     )
-
 }
 
 @Composable
@@ -96,9 +94,6 @@ fun ActionButtons(navController: NavController) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
-
-
-
     ) {
         Button(
             onClick = {
