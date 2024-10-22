@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.crissnm.registrousuarios.ManejoDeUsuarios.User
 import com.crissnm.registrousuarios.ManejoDeUsuarios.Validaciones
+import com.crissnm.registrousuarios.Navegacion.ManejoDeLasPantallasDeLaApp
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable

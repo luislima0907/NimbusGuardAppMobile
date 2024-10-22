@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.crissnm.registrousuarios.ManejoDeUsuarios.User
+import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaConInformacionDeLaApp
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeBienvenida
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeInicio
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeLogin
@@ -68,6 +69,9 @@ fun navegacionDeLaApp() {
         }
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaDeBienvenida.ruta){
             PantallaDeBienvenida(navController)
+        }
+        composable(route = ManejoDeLasPantallasDeLaApp.PantallaConInfoApp.ruta){
+            PantallaConInformacionDeLaApp(navController)
         }
     }
 }
