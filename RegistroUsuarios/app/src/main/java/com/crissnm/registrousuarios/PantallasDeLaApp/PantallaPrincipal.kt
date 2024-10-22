@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.crissnm.registrousuarios.Componentes.Inicio.ItemDeLaBarra
 import com.crissnm.registrousuarios.ManejoDeUsuarios.User
+import com.crissnm.registrousuarios.ManejoDeUsuarios.UserAuthService
 import com.crissnm.registrousuarios.R
 
 @Composable
@@ -166,7 +167,8 @@ fun contenidoDeLaBarraDeNavegacionInferior(
                 department = "",
                 municipality = ""
             )
-            PantallaDePerfil(navController = navController, user = newUser) // Pasando el usuario simulado
+            val authService = UserAuthService()
+            PantallaDePerfil(navController = navController, user = newUser, authService = authService)
         }
         //1 -> PantallaDePerfil(navController)
         2 -> PantallaDeNotificacion(navController)

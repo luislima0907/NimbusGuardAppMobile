@@ -26,6 +26,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.crissnm.registrousuarios.R
 
 @Composable
@@ -89,7 +90,7 @@ fun PhotoCarousel() {
 }
 
 @Composable
-fun ActionButtons() {
+fun ActionButtons(navController: NavController) {
     Row(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         modifier = Modifier
@@ -100,7 +101,9 @@ fun ActionButtons() {
 
     ) {
         Button(
-            onClick = { /* Acción de iniciar sesión */ },
+            onClick = {
+                navController.navigate("pantalla_login")
+            },
             modifier = Modifier.weight(1f),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Black,
@@ -116,7 +119,9 @@ fun ActionButtons() {
             )
         }
         Button(
-            onClick = { /* Acción de registrarse */ },
+            onClick = {
+                navController.navigate("pantalla_registro")
+            },
             modifier = Modifier.weight(1f),
             colors = ButtonDefaults.buttonColors(
                 containerColor = Color.Black,

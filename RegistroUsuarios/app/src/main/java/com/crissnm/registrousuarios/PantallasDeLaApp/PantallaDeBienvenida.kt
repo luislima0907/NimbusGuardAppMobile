@@ -25,7 +25,7 @@ fun PantallaDeBienvenida(navController: NavController){
     LaunchedEffect(key1 = true) {
         delay(3000)
         navController.popBackStack()
-        navController.navigate(ManejoDeLasPantallasDeLaApp.PantallaDeRegistro.ruta)
+        navController.navigate(ManejoDeLasPantallasDeLaApp.PantallaConInfoApp.ruta)
     }
     //navController.navigate(ManejoDeLasPantallasDeLaApp.PantallaDeRegistro.ruta)
     Splash()

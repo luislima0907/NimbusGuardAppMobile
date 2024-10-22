@@ -33,6 +33,31 @@ class UserFireStoreService {
                 callback(null)
             }
     }
+    // Eliminar un usuario por UID
+    fun deleteUserFromFirestore(user: User, callback: (Boolean) -> Unit) {
+        firebaseStoreUserRef.document(user.uid).delete()
+            .addOnSuccessListener {
+                Log.d("DEBUG", "Usuario eliminado: ${user.uid}")
+                callback(true)
+            }
+            .addOnFailureListener { exception ->
+                Log.e("ERROR", "Error al eliminar el usuario: ${exception.message}")
+                callback(false)
+            }
+    }
+
+    // Actualizar un usuario en Firestore
+    fun updateUserInFirestore(user: User, callback: (Boolean) -> Unit) {
+        firebaseStoreUserRef.document(user.uid).set(user)
+            .addOnSuccessListener {
+                Log.d("DEBUG", "Usuario actualizado: ${user.uid}")
+                callback(true)
+            }
+            .addOnFailureListener { exception ->
+                Log.e("ERROR", "Error al actualizar el usuario: ${exception.message}")
+                callback(false)
+            }
+    }
 }
 
 

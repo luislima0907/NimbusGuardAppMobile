@@ -9,8 +9,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.crissnm.registrousuarios.ManejoDeUsuarios.User
+import com.crissnm.registrousuarios.ManejoDeUsuarios.UserAuthService
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeBienvenida
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeInicio
+import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaConInfoApp
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeLogin
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeNotificacion
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDePerfil
@@ -21,6 +23,7 @@ import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaPrincipal
 @Composable
 fun navegacionDeLaApp() {
     val navController = rememberNavController()
+    val authService = UserAuthService()
 
     // Crear un mapa de estado para controlar la habilitación de los botones
     val buttonStates = rememberSaveable { mutableStateOf(mutableMapOf<String, Boolean>()) }
@@ -36,7 +39,7 @@ fun navegacionDeLaApp() {
             PantallaDeRegistro(navController)
         }
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaDeLogin.ruta) {
-            PantallaDeLogin(navController = navController, users = listOf()) // Lista vacía para usuarios
+            PantallaDeLogin(navController = navController, users = listOf())
         }
         composable(
             route = ManejoDeLasPantallasDeLaApp.PantallaDeInicio.ruta + "/{uid}",
@@ -45,6 +48,10 @@ fun navegacionDeLaApp() {
             PantallaDeInicio(navController, buttonStates.value, onButtonStatusChange = { buttonId, isEnabled ->
                 buttonStates.value[buttonId.toString()] = isEnabled as Boolean
             })
+        }
+        composable(
+            route = ManejoDeLasPantallasDeLaApp.PantallaConInfoApp.ruta){
+            PantallaConInfoApp(navController)
         }
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaDetalleDeLaAlerta.ruta) {
             PantallaDetalleDeLaAlerta(navController)
@@ -64,7 +71,7 @@ fun navegacionDeLaApp() {
                 department = "",
                 municipality = ""
             )
-            PantallaDePerfil(navController = navController,user = newUser) // Pasando el usuario simulado
+            PantallaDePerfil(navController = navController,user = newUser, authService = authService) // Pasando el usuario
         }
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaDeBienvenida.ruta){
             PantallaDeBienvenida(navController)

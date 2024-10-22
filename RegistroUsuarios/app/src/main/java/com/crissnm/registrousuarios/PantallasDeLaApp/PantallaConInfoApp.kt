@@ -36,7 +36,7 @@ fun PantallaPrincipal(navController: NavController) {
         Spacer(modifier = Modifier.height(18.dp))
         PhotoCarousel()
         Spacer(modifier = Modifier.height(16.dp))
-        ActionButtons()
+        ActionButtons(navController = navController)
     }
 }
 
@@ -56,3 +56,27 @@ fun NavigationApp() {
 fun PantallaPrincipalPreview() {
     PantallaPrincipal(rememberNavController())
 }
+@Composable
+fun PantallaConInfoApp(navController: NavController) {
+    contenidoPantallaConInformacionDeLaApp(navController)
+}
+
+@Composable
+fun contenidoPantallaConInformacionDeLaApp(navController: NavController) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
+        TextoBienvenida()
+        Spacer(modifier = Modifier.height(16.dp))
+        InstruccionesUso()
+        Spacer(modifier = Modifier.height(18.dp))
+        PhotoCarousel()
+        Spacer(modifier = Modifier.height(16.dp))
+        ActionButtons(navController = navController)
+    }
+}
+
