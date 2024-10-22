@@ -1,6 +1,7 @@
 package com.crissnm.registrousuarios.PantallasDeLaApp
 
 import android.annotation.SuppressLint
+import android.os.CountDownTimer
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -22,14 +23,17 @@ import com.crissnm.registrousuarios.Navegacion.ManejoDeLasPantallasDeLaApp
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
-fun PantallaDePerfil(navController: NavController, user: User, authService: UserAuthService) {
-    contenidoPantallaDePerfil(navController, user, authService)
+fun PantallaDePerfil(navController: NavController, uid: String, authService: UserAuthService) {
+    contenidoPantallaDePerfil(navController, uid, authService)
 }
 
 @Composable
-fun contenidoPantallaDePerfil(navController: NavController, user: User, authService: UserAuthService) {
+fun contenidoPantallaDePerfil(navController: NavController, uid: String, authService: UserAuthService) {
     val context = LocalContext.current
     val firestoreService = UserFireStoreService()
+
+    // Estado para almacenar el objeto User
+    var user by remember { mutableStateOf<User?>(null) }
 
     // Estado para mostrar el diálogo de edición de perfil
     var showEditDialog by remember { mutableStateOf(false) }
@@ -37,15 +41,62 @@ fun contenidoPantallaDePerfil(navController: NavController, user: User, authServ
     // Estado para el diálogo de confirmación de eliminación
     var showDeleteConfirmation by remember { mutableStateOf(false) }
 
-    // Definir variables fuera del scope del AlertDialog
-    var nombres by remember { mutableStateOf(user.name) }
-    var apellidos by remember { mutableStateOf(user.lastname) }
-    var telefono by remember { mutableStateOf(user.number) }
-    var correo by remember { mutableStateOf(user.email) }
-    var contrasena by remember { mutableStateOf(user.password) }
-    var cui by remember { mutableStateOf(user.cui) }
-    var departamento by remember { mutableStateOf(user.department) }
-    var municipio by remember { mutableStateOf(user.municipality) }
+    // Usar LaunchedEffect para recuperar el usuario basado en el UID
+    LaunchedEffect(uid) {
+        firestoreService.getUserbyUid(uid) { fetchedUser ->
+            if (fetchedUser != null) {
+                user = fetchedUser
+            } else {
+                // Mostramos un mensaje de error si el usuario no es encontrado
+                Toast.makeText(context, "Usuario no encontrado", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    // Si el usuario ya fue cargado, asignar sus datos a variables
+    var nombres by remember { mutableStateOf(user?.name ?: "") }
+    var apellidos by remember { mutableStateOf(user?.lastname ?: "") }
+    var telefono by remember { mutableStateOf(user?.number ?: "") }
+    var correo by remember { mutableStateOf(user?.email ?: "") }
+    var contrasena by remember { mutableStateOf(user?.password ?: "") }
+    var cui by remember { mutableStateOf(user?.cui ?: "") }
+    var departamento by remember { mutableStateOf(user?.department ?: "") }
+    var municipio by remember { mutableStateOf(user?.municipality ?: "") }
+
+    // Actualizar los valores de los campos editables cuando se carga el usuario
+    LaunchedEffect(user) {
+        user?.let {
+            nombres = it.name
+            apellidos = it.lastname
+            telefono = it.number
+            correo = it.email
+            contrasena = it.password
+            cui = it.cui
+            departamento = it.department
+            municipio = it.municipality
+        }
+    }
+
+    // Estado del contador para eliminar cuenta
+    var isDeleteButtonEnabled by remember { mutableStateOf(false) }
+    var timerText by remember { mutableStateOf("Eliminar Cuenta (10)") } // Texto inicial del botón
+
+    // Temporizador de cuenta regresiva de 10 segundos
+    LaunchedEffect(showDeleteConfirmation) {
+        if (showDeleteConfirmation) {
+            object : CountDownTimer(10000, 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    val secondsLeft = millisUntilFinished / 1000
+                    timerText = "Eliminar Cuenta ($secondsLeft)"
+                }
+
+                override fun onFinish() {
+                    isDeleteButtonEnabled = true
+                    timerText = "Eliminar Cuenta"
+                }
+            }.start()
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -55,6 +106,18 @@ fun contenidoPantallaDePerfil(navController: NavController, user: User, authServ
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text("Perfil", fontSize = 24.sp, modifier = Modifier.padding(bottom = 16.dp))
+
+        // Mostrar la información del usuario recuperada
+        Text(text = "Nombres: $nombres")
+        Text(text = "Apellidos: $apellidos")
+        Text(text = "Teléfono: $telefono")
+        Text(text = "Correo: $correo")
+        //Text(text = "Contraseña: $contrasena")
+        Text(text = "CUI: $cui")
+        Text(text = "Departamento: $departamento")
+        Text(text = "Municipio: $municipio")
+
+        Spacer(modifier = Modifier.height(20.dp))
 
         // Botón para abrir el diálogo de edición de perfil
         Button(onClick = {
@@ -69,6 +132,7 @@ fun contenidoPantallaDePerfil(navController: NavController, user: User, authServ
         Button(
             onClick = {
                 showDeleteConfirmation = true // Mostrar el diálogo de confirmación
+                isDeleteButtonEnabled = false // Deshabilitar el botón de eliminación
             },
             colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
         ) {
@@ -90,6 +154,7 @@ fun contenidoPantallaDePerfil(navController: NavController, user: User, authServ
             Text(text = "Cerrar Sesión", color = Color.White)
         }
 
+
         // Diálogo de confirmación de eliminación
         if (showDeleteConfirmation) {
             AlertDialog(
@@ -105,20 +170,22 @@ fun contenidoPantallaDePerfil(navController: NavController, user: User, authServ
                 confirmButton = {
                     Button(
                         onClick = {
-                            // Elimina el usuario de Firestore
-                            firestoreService.deleteUserFromFirestore(user) {
-                                if (it) {
-                                    Toast.makeText(context, "Cuenta eliminada con éxito", Toast.LENGTH_SHORT).show()
-                                    navController.popBackStack()
-                                } else {
-                                    Toast.makeText(context, "Error al eliminar la cuenta", Toast.LENGTH_SHORT).show()
+                            if (isDeleteButtonEnabled) {
+                                firestoreService.deleteUserFromFirestore(user!!) {
+                                    if (it) {
+                                        Toast.makeText(context, "Cuenta eliminada con éxito", Toast.LENGTH_SHORT).show()
+                                        navController.popBackStack()
+                                    } else {
+                                        Toast.makeText(context, "Error al eliminar la cuenta", Toast.LENGTH_SHORT).show()
+                                    }
                                 }
+                                showDeleteConfirmation = false
                             }
-                            showDeleteConfirmation = false // Cierra el diálogo después de eliminar
                         },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                        enabled = isDeleteButtonEnabled
                     ) {
-                        Text(text = "Eliminar Cuenta", color = Color.White)
+                        Text(text = timerText, color = Color.White) // Mostrar el texto actualizado
                     }
                 },
                 dismissButton = {
@@ -228,17 +295,17 @@ fun contenidoPantallaDePerfil(navController: NavController, user: User, authServ
                                 }
                                 else -> {
                                     // Actualización directa en el objeto user
-                                    user.name = nombres
-                                    user.lastname = apellidos
-                                    user.number = telefono
-                                    user.email = correo
-                                    user.password = contrasena
-                                    user.cui = cui
-                                    user.department = departamento
-                                    user.municipality = municipio
+                                    user!!.name = nombres
+                                    user!!.lastname = apellidos
+                                    user!!.number = telefono
+                                    user!!.email = correo
+                                    user!!.password = contrasena
+                                    user!!.cui = cui
+                                    user!!.department = departamento
+                                    user!!.municipality = municipio
 
                                     // Actualización en Firestore
-                                    firestoreService.updateUserInFirestore(user) {
+                                    firestoreService.updateUserInFirestore(user!!) {
                                         if (it) {
                                             Toast.makeText(context, "Perfil actualizado con éxito", Toast.LENGTH_SHORT).show()
                                             showEditDialog = false // Cierra el diálogo después de la actualización

@@ -41,6 +41,7 @@ import com.crissnm.registrousuarios.Componentes.Inicio.ItemDeLaBarra
 import com.crissnm.registrousuarios.ManejoDeUsuarios.User
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserAuthService
 import com.crissnm.registrousuarios.R
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun PantallaPrincipal(
@@ -156,20 +157,11 @@ fun contenidoDeLaBarraDeNavegacionInferior(
             onButtonStatusChange = onButtonStatusChange
         )
         1 -> {
-            val newUser = User(
-                uid = "",
-                name = "",
-                lastname = "",
-                email = "",
-                password = "",
-                cui = "",
-                number = "",
-                department = "",
-                municipality = ""
-            )
-            val authService = UserAuthService()
-            PantallaDePerfil(navController = navController, user = newUser, authService = authService)
-        }
+        val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+        val authService = UserAuthService()
+        PantallaDePerfil(navController = navController, uid = uid, authService = authService)
+    }
+
         2 -> PantallaDeNotificacion(navController)
     }
 }

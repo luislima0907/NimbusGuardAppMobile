@@ -59,28 +59,9 @@ class UserAuthService {
                 }
             }
     }
-    fun logoutUser(callback: () -> Unit) {
-        auth.signOut()
-        callback() // Redirigir o manejar el cierre de sesión
-    }
-    fun deleteUserFromFirestore(user: User, callback: (Boolean) -> Unit) {
-        firebaseStoreUserRef.document(user.uid).delete()
-            .addOnSuccessListener {
-                callback(true)
-            }
-            .addOnFailureListener {
-                callback(false)
-            }
-    }
-
-    fun updateUserInFirestore(user: User, callback: (Boolean) -> Unit) {
-        firebaseStoreUserRef.document(user.uid).set(user)
-            .addOnSuccessListener {
-                callback(true)
-            }
-            .addOnFailureListener {
-                callback(false)
-            }
+    fun logoutUser(onComplete: () -> Unit) {
+        FirebaseAuth.getInstance().signOut()
+        onComplete()
     }
 
 }

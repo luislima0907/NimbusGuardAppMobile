@@ -59,19 +59,12 @@ fun navegacionDeLaApp() {
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaDeNotificacion.ruta) {
             PantallaDeNotificacion(navController)
         }
-        composable(route = ManejoDeLasPantallasDeLaApp.PantallaDePerfil.ruta) {
-            val newUser = User(
-                uid = "",
-                name = "",
-                lastname = "",
-                email = "",
-                password = "",
-                cui = "",
-                number = "",
-                department = "",
-                municipality = ""
-            )
-            PantallaDePerfil(navController = navController,user = newUser, authService = authService) // Pasando el usuario
+        composable(
+            route = ManejoDeLasPantallasDeLaApp.PantallaDePerfil.ruta + "/{uid}",
+            arguments = listOf(navArgument("uid") { type = NavType.StringType })
+        ) {
+            val uid = it.arguments?.getString("uid") ?: ""
+            PantallaDePerfil(navController = navController, uid = uid, authService = authService)
         }
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaDeBienvenida.ruta){
             PantallaDeBienvenida(navController)
