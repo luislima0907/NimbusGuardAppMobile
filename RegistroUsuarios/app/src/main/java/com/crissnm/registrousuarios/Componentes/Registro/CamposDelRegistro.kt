@@ -351,13 +351,7 @@ fun ContrasenaField(contrasena: MutableState<String>, errorMessage: MutableState
     OutlinedTextField(
         value = contrasena.value,
         onValueChange = { newValue ->
-            contrasena.value = newValue
-            // Validar longitud de la contraseña
-            if (newValue.length < 6) {
-                errorMessage.value = "La contraseña debe tener al menos 6 caracteres."
-            } else {
-                errorMessage.value = ""
-            }
+            actualizarContrasena(newValue, contrasena, errorMessage)  // Llama a la función para actualizar y validar
         },
         label = { Text("Contraseña", fontSize = 12.sp) },
         modifier = Modifier
@@ -380,6 +374,22 @@ fun ContrasenaField(contrasena: MutableState<String>, errorMessage: MutableState
     }
 }
 
+// Función para actualizar el valor de la contraseña y validar
+fun actualizarContrasena(
+    newValue: String,
+    contrasena: MutableState<String>,
+    errorMessage: MutableState<String>
+) {
+    contrasena.value = newValue
+    // Validar longitud de la contraseña
+    if (newValue.length < 6) {
+        errorMessage.value = "La contraseña debe tener al menos 6 caracteres."
+    } else {
+        errorMessage.value = ""
+    }
+}
+
+
 @Composable
 fun RegisterUserButton(
     nombres: MutableState<String>,
@@ -400,6 +410,7 @@ fun RegisterUserButton(
     val cuiError = remember { mutableStateOf("") }
     val telefonoError = remember { mutableStateOf("") }
     val emailError = remember { mutableStateOf("") }
+    val contrasenaError = remember { mutableStateOf("") }
 
     // Verificar si todos los campos son válidos
     val isFormValid = esFormularioValido(
@@ -414,6 +425,7 @@ fun RegisterUserButton(
         cuiError,
         telefonoError,
         emailError,
+        contrasenaError,
         municipio,
         departamento
     )
@@ -462,6 +474,7 @@ fun esFormularioValido(
     cuiError: MutableState<String>,
     telefonoError: MutableState<String>,
     emailError: MutableState<String>,
+    contrasenaError: MutableState<String>,
     municipio: MutableState<String>,
     departamento: MutableState<String>
 ): Boolean {
@@ -470,6 +483,7 @@ fun esFormularioValido(
     validarCUI(cui, mutableStateOf(cui), municipio, departamento, cuiError, mutableStateOf(""))
     validarTelefono(telefono, mutableStateOf(telefono), telefonoError)
     validarCorreo(email, mutableStateOf(email), emailError)
+    actualizarContrasena(contrasena, mutableStateOf(contrasena), contrasenaError)
 
     return nombreError.value.isEmpty() &&
             apellidoError.value.isEmpty() &&

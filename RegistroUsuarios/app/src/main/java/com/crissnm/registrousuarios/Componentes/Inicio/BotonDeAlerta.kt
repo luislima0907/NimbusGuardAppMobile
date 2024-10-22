@@ -127,6 +127,7 @@ fun showAlertInputDialog(
     onDismiss: () -> Unit
 ) {
     var alertDetails by remember { mutableStateOf("") }
+    var typeAlert by remember { mutableStateOf("") }
 
     AlertDialog(
         onDismissRequest = { onDismiss() },
@@ -146,7 +147,12 @@ fun showAlertInputDialog(
         },
         confirmButton = {
             Button(onClick = {
-                handleSendAlert(latitud, longitud, uid, alertDetails) {
+                handleSendAlert(
+                    latitud =  latitud,
+                    longitud =  longitud,
+                    uid =  uid,
+                    alertDetails =  alertDetails
+                ) {
                     onSend()
                 }
             }) {
