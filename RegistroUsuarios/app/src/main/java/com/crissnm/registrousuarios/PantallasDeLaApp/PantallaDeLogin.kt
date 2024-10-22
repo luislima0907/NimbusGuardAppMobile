@@ -1,5 +1,6 @@
 package com.crissnm.registrousuarios.PantallasDeLaApp
 
+import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -19,8 +20,11 @@ import androidx.navigation.NavController
 import com.crissnm.registrousuarios.Componentes.Login.ContrasenaField
 import com.crissnm.registrousuarios.Componentes.Login.CorreoField
 import com.crissnm.registrousuarios.ManejoDeUsuarios.User
+import com.crissnm.registrousuarios.ManejoDeUsuarios.UserAuthService
+import com.crissnm.registrousuarios.ManejoDeUsuarios.UserFireStoreService
 import com.crissnm.registrousuarios.ManejoDeUsuarios.Validaciones
 import com.crissnm.registrousuarios.Navegacion.ManejoDeLasPantallasDeLaApp
+import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun PantallaDeLogin(navController: NavController, users: List<User>) {
@@ -37,6 +41,7 @@ fun LoginForm(navController: NavController, users: List<User>) {
     // Estado para controlar el diálogo de error o éxito
     val showLoginSuccessDialog = remember { mutableStateOf(false) }
     val showLoginErrorDialog = remember { mutableStateOf(false) }
+    val uidState = remember { mutableStateOf<String?>(null) }  // Estado para guardar el UID
 
     val scrollState = rememberScrollState() // Estado para el scroll
 
@@ -64,30 +69,25 @@ fun LoginForm(navController: NavController, users: List<User>) {
 
         Spacer(modifier = Modifier.height(3.dp))
 
+        val userAuthService = UserAuthService() // Crear instancia del servicio de autenticación
+
         Button(
             onClick = {
-                // Verificar si los campos están vacíos
-                if (correo.value.isBlank()) {
-                    Toast.makeText(context, "El campo de correo está vacío", Toast.LENGTH_SHORT).show()
-                } else if (contrasena.value.isBlank()) {
-                    Toast.makeText(context, "El campo de contraseña está vacío", Toast.LENGTH_SHORT).show()
-                } else {
-                    // Validar formato del correo
-                    if (!Validaciones.isValidCorreo(correo.value)) {
-                        Toast.makeText(context, "Correo inválido", Toast.LENGTH_SHORT).show()
-                        return@Button
-                    }
+                // Ejecutar la función de validación
+                if (!validarCredenciales(correo.value, contrasena.value, context) { mensajeError ->
+                        Toast.makeText(context, mensajeError, Toast.LENGTH_SHORT).show()
+                    }) {
+                    return@Button // Detener el flujo si las validaciones fallan
+                }
 
-                    // Buscar en la lista de usuarios registrados
-                    val user = users.find { it.email == correo.value }
-
-                    // Si el usuario existe y la contraseña coincide
-                    if (user != null && user.password == contrasena.value) {
-                        // Mostrar diálogo de éxito si las credenciales coinciden
+                // Usar Firebase para validar el login
+                userAuthService.loginUser(context, correo.value, contrasena.value) { success, uid ->
+                    if (success) {
+                        uidState.value = uid.toString() // Guardar el UID en el estado
                         showLoginSuccessDialog.value = true
                     } else {
-                        // Mostrar diálogo de error si las credenciales no coinciden
                         showLoginErrorDialog.value = true
+                        Toast.makeText(context, "Error al iniciar sesión", Toast.LENGTH_SHORT).show()
                     }
                 }
             },
@@ -109,7 +109,7 @@ fun LoginForm(navController: NavController, users: List<User>) {
     }
 
     // Diálogo de inicio de sesión exitoso
-    if (showLoginSuccessDialog.value) {
+    if (showLoginSuccessDialog.value && uidState.value != null) {
         AlertDialog(
             onDismissRequest = { showLoginSuccessDialog.value = false },
             title = { Text(text = "Inicio de Sesión Exitoso!", fontWeight = FontWeight.Bold, fontSize = 20.sp) },
@@ -118,7 +118,7 @@ fun LoginForm(navController: NavController, users: List<User>) {
                 Button(
                     onClick = {
                         showLoginSuccessDialog.value = false
-                        navController.navigate(ManejoDeLasPantallasDeLaApp.PantallaPrincipal.ruta)
+                        navController.navigate("pantalla_principal/${uidState.value}") // Navegar solo después de aceptar
                     }
                 ) {
                     Text("Aceptar")
@@ -149,4 +149,29 @@ fun LoginForm(navController: NavController, users: List<User>) {
         )
     }
 }
+
+fun validarCredenciales(
+    correo: String,
+    contrasena: String,
+    context: Context,
+    onValidacionFallida: (String) -> Unit
+): Boolean {
+    if (correo.isBlank()) {
+        onValidacionFallida("El campo de correo está vacío")
+        return false
+    }
+
+    if (contrasena.isBlank()) {
+        onValidacionFallida("El campo de contraseña está vacío")
+        return false
+    }
+
+    if (!Validaciones.isValidCorreo(correo)) {
+        onValidacionFallida("Correo inválido")
+        return false
+    }
+
+    return true // Las validaciones han sido exitosas
+}
+
 

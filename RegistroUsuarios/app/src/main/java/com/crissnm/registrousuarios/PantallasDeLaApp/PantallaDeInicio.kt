@@ -143,7 +143,7 @@ fun contenidoPantallaDeInicio(
             //var isButtonEnabled = false
 
             BotonDeAlerta(
-                id = uid.toString(),
+                uid = uid.toString(),
                 navController = navController,
                 buttonConfig = buttonConfig,
                 fusedLocationClient = fusedLocationClient,

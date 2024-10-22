@@ -127,16 +127,16 @@ fun RegistrationForm(navController: NavController) {
                 Button(
                     onClick = {
                         handleUserRegistration(
-                            nombres.value,
-                            apellidos.value,
-                            cui.value,
-                            telefono.value,
-                            correo.value,
-                            contrasena.value,
-                            departamento.value,
-                            municipio.value,
-                            context,
-                            navController
+                            nombres =  nombres.value,
+                            apellidos =  apellidos.value,
+                            cui =  cui.value,
+                            telefono =  telefono.value,
+                            correo =  correo.value,
+                            contrasena =  contrasena.value,
+                            departamento =  departamento.value,
+                            municipio =  municipio.value,
+                            context =  context,
+                            navController =  navController
                         ) {
                             showSuccessDialog.value = false
                         }

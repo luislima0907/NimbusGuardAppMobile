@@ -3,6 +3,7 @@ package com.crissnm.registrousuarios.Componentes.Inicio
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
+import android.util.Log
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
@@ -30,7 +31,7 @@ import java.time.format.DateTimeFormatter
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun BotonDeAlerta(
-    id:String,
+    uid:String,
     navController: NavController,
     buttonConfig: ButtonConfig,
     fusedLocationClient: FusedLocationProviderClient,
@@ -96,7 +97,8 @@ fun BotonDeAlerta(
         showAlertInputDialog(
             latitud = latitud,
             longitud = longitud,
-            uid = id,
+            uid = uid, // Pasar el UID correctamente
+            typeAlert = buttonConfig.title, // Pasar el título del botón como tipo de alerta
             onSend = {
                 showAlertDialog = false
                 showConfirmationDialog = true
@@ -122,12 +124,12 @@ fun BotonDeAlerta(
 fun showAlertInputDialog(
     latitud: Double,
     longitud: Double,
-    uid:String,
+    uid: String,  // UID como String
+    typeAlert: String,  // Título del botón como tipo de alerta
     onSend: () -> Unit,
     onDismiss: () -> Unit
 ) {
     var alertDetails by remember { mutableStateOf("") }
-    var typeAlert by remember { mutableStateOf("") }
 
     AlertDialog(
         onDismissRequest = { onDismiss() },
@@ -148,10 +150,11 @@ fun showAlertInputDialog(
         confirmButton = {
             Button(onClick = {
                 handleSendAlert(
-                    latitud =  latitud,
-                    longitud =  longitud,
-                    uid =  uid,
-                    alertDetails =  alertDetails
+                    latitud = latitud,
+                    longitud = longitud,
+                    uid = uid,  // Pasar UID correctamente
+                    alertDetails = alertDetails,
+                    typeAlert = typeAlert // Pasar el título como tipo de alerta
                 ) {
                     onSend()
                 }
@@ -171,8 +174,9 @@ fun showAlertInputDialog(
 fun handleSendAlert(
     latitud: Double,
     longitud: Double,
-    uid: String,
+    uid: String,  // UID como String
     alertDetails: String,
+    typeAlert: String,  // Título del botón como tipo de alerta
     onSuccess: () -> Unit
 ) {
     val fireStoreServiceAlert = FireStoreServiceAlert()
@@ -181,7 +185,7 @@ fun handleSendAlert(
         latitude = latitud
         longitude = longitud
         detail = alertDetails
-        typeAlert = ButtonConfig().title
+        this.typeAlert = typeAlert  // Asigna el tipo de alerta desde el título del botón
         date = LocalDateTime.now().toString()
     }
 
@@ -191,6 +195,8 @@ fun handleSendAlert(
             alert.user = user
             fireStoreServiceAlert.saveAlertInFireStore(alert)
             onSuccess() // Notifica que la alerta fue enviada
+        } else {
+            Log.d("DEBUG", "No se encontró el usuario con UID: $uid")
         }
     }
 }

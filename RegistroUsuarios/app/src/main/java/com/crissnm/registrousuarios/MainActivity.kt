@@ -32,15 +32,15 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun RegistrationFormPreview() {
-    RegistroUsuariosTheme {
-        Surface(
-            modifier = Modifier.fillMaxSize(),
-            color = androidx.compose.material3.MaterialTheme.colorScheme.background
-        ) {
-            navegacionDeLaApp()
-        }
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun RegistrationFormPreview() {
+//    RegistroUsuariosTheme {
+//        Surface(
+//            modifier = Modifier.fillMaxSize(),
+//            color = androidx.compose.material3.MaterialTheme.colorScheme.background
+//        ) {
+//            navegacionDeLaApp()
+//        }
+//    }
+//}
