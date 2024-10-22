@@ -17,7 +17,7 @@ import com.crissnm.registrousuarios.Componentes.pantallainicial.PhotoCarousel
 import com.crissnm.registrousuarios.Componentes.pantallainicial.TextoBienvenida
 
 @Composable
-fun PantallaConInformacionDeLaApp(navController: NavController) {
+fun PantallaConInfoApp(navController: NavController) {
     contenidoPantallaConInformacionDeLaApp(navController)
 }
 
@@ -36,6 +36,6 @@ fun contenidoPantallaConInformacionDeLaApp(navController: NavController) {
         Spacer(modifier = Modifier.height(18.dp))
         PhotoCarousel()
         Spacer(modifier = Modifier.height(16.dp))
-        ActionButtons()
+        ActionButtons(navController = navController)
     }
 }

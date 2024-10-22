@@ -5,11 +5,13 @@ import android.util.Log
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.ktx.Firebase
 
 class UserAuthService {
     private val auth:FirebaseAuth = Firebase.auth
     private val  serviceFireStore: UserFireStoreService = UserFireStoreService()
+    private val firebaseStoreUserRef = FirebaseFirestore.getInstance().collection("users")
 
 
     fun registerUser(context: Context, user: User, callback: (String?) -> Unit) {
@@ -57,6 +59,28 @@ class UserAuthService {
                 }
             }
     }
+    fun logoutUser(callback: () -> Unit) {
+        auth.signOut()
+        callback() // Redirigir o manejar el cierre de sesión
+    }
+    fun deleteUserFromFirestore(user: User, callback: (Boolean) -> Unit) {
+        firebaseStoreUserRef.document(user.uid).delete()
+            .addOnSuccessListener {
+                callback(true)
+            }
+            .addOnFailureListener {
+                callback(false)
+            }
+    }
 
+    fun updateUserInFirestore(user: User, callback: (Boolean) -> Unit) {
+        firebaseStoreUserRef.document(user.uid).set(user)
+            .addOnSuccessListener {
+                callback(true)
+            }
+            .addOnFailureListener {
+                callback(false)
+            }
+    }
 
 }
