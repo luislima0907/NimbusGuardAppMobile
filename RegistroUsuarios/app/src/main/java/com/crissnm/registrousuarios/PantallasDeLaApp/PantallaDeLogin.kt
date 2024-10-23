@@ -19,6 +19,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.crissnm.registrousuarios.Componentes.Login.ContrasenaField
 import com.crissnm.registrousuarios.Componentes.Login.CorreoField
+import com.crissnm.registrousuarios.Componentes.Login.ImagenLogin
 import com.crissnm.registrousuarios.ManejoDeUsuarios.User
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserAuthService
 import com.crissnm.registrousuarios.ManejoDeUsuarios.Validaciones
@@ -74,7 +75,7 @@ fun LoginForm(navController: NavController, users: List<User>) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 20.dp, end = 20.dp, top = 90.dp, bottom = 10.dp)
+            .padding(start = 20.dp, end = 20.dp, top = 210.dp, bottom = 50.dp)
             .verticalScroll(scrollState), // Habilitar desplazamiento
         verticalArrangement = Arrangement.spacedBy(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -87,6 +88,10 @@ fun LoginForm(navController: NavController, users: List<User>) {
             fontFamily = FontFamily.Serif
         )
 
+        Spacer(modifier = Modifier.height(2.dp))
+
+        // Imagen de inicio de sesión
+        ImagenLogin()
         Spacer(modifier = Modifier.height(16.dp))
 
         // Campos de texto para correo y contraseña
