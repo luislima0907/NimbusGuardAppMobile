@@ -1,7 +1,6 @@
 package com.crissnm.registrousuarios.PantallasDeLaApp
 
 import android.content.Context
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -14,7 +13,6 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -24,7 +22,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
-import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import com.crissnm.registrousuarios.Componentes.Registro.ApellidoField
 import com.crissnm.registrousuarios.Componentes.Registro.CUIField
@@ -37,14 +34,8 @@ import com.crissnm.registrousuarios.Componentes.Registro.NombreField
 import com.crissnm.registrousuarios.Componentes.Registro.RegisterUserButton
 import com.crissnm.registrousuarios.Componentes.Registro.TelefonoField
 import com.crissnm.registrousuarios.Componentes.Registro.Titulo
-import com.crissnm.registrousuarios.Componentes.Registro.validarApellido
-import com.crissnm.registrousuarios.Componentes.Registro.validarCUI
-import com.crissnm.registrousuarios.Componentes.Registro.validarCorreo
-import com.crissnm.registrousuarios.Componentes.Registro.validarNombre
-import com.crissnm.registrousuarios.Componentes.Registro.validarTelefono
 import com.crissnm.registrousuarios.ManejoDeUsuarios.User
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserAuthService
-import com.crissnm.registrousuarios.ManejoDeUsuarios.Validaciones
 import com.crissnm.registrousuarios.Navegacion.ManejoDeLasPantallasDeLaApp
 
 @Composable

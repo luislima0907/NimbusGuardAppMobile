@@ -21,6 +21,7 @@ import com.crissnm.registrousuarios.ManejoDeUsuarios.User
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserAuthService
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserFireStoreService
 import com.crissnm.registrousuarios.ManejoDeUsuarios.Validaciones
+import com.crissnm.registrousuarios.DepYmuni.ValidarCUI // Asegúrate de importar tu clase
 import com.crissnm.registrousuarios.Navegacion.ManejoDeLasPantallasDeLaApp
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -33,6 +34,27 @@ fun PantallaDePerfil(navController: NavController, uid: String, authService: Use
 fun contenidoPantallaDePerfil(navController: NavController, uid: String, authService: UserAuthService) {
     val context = LocalContext.current
     val firestoreService = UserFireStoreService()
+    val validarCUI = ValidarCUI() // Instancia de ValidarCUI
+    var isDeleteButtonEnabled by remember { mutableStateOf(false) }
+    var showDeleteConfirmation by remember { mutableStateOf(false) }
+    var timerText by remember { mutableStateOf("Eliminar Cuenta (10)") }
+
+    // Temporizador de cuenta regresiva para la eliminación de la cuenta
+    LaunchedEffect(showDeleteConfirmation) {
+        if (showDeleteConfirmation) {
+            object : CountDownTimer(10000, 1000) {
+                override fun onTick(millisUntilFinished: Long) {
+                    val secondsLeft = millisUntilFinished / 1000
+                    timerText = "Eliminar Cuenta ($secondsLeft)"
+                }
+
+                override fun onFinish() {
+                    isDeleteButtonEnabled = true
+                    timerText = "Eliminar Cuenta"
+                }
+            }.start()
+        }
+    }
 
     // Estado para almacenar el objeto User
     var user by remember { mutableStateOf<User?>(null) }
@@ -51,16 +73,17 @@ fun contenidoPantallaDePerfil(navController: NavController, uid: String, authSer
         }
     }
 
-    // Si el usuario ya fue cargado, asignar sus datos a variables
-    var nombres by remember { mutableStateOf(user?.name ?: "") }
-    var apellidos by remember { mutableStateOf(user?.lastname ?: "") }
-    var telefono by remember { mutableStateOf(user?.number ?: "") }
-    var correo by remember { mutableStateOf(user?.email ?: "") }
-    var contrasena by remember { mutableStateOf(user?.password ?: "") }
-    var cui by remember { mutableStateOf(user?.cui ?: "") }
-    var departamento by remember { mutableStateOf(user?.department ?: "") }
-    var municipio by remember { mutableStateOf(user?.municipality ?: "") }
+    // Estados para los campos de texto del perfil
+    var nombres by remember { mutableStateOf("") }
+    var apellidos by remember { mutableStateOf("") }
+    var telefono by remember { mutableStateOf("") }
+    var correo by remember { mutableStateOf("") }
+    var contrasena by remember { mutableStateOf("") }
+    var cui by remember { mutableStateOf("") }
+    var departamento by remember { mutableStateOf("") }
+    var municipio by remember { mutableStateOf("") }
 
+    // Actualizar los campos cuando se carga el usuario
     LaunchedEffect(user) {
         user?.let {
             nombres = it.name
@@ -81,11 +104,13 @@ fun contenidoPantallaDePerfil(navController: NavController, uid: String, authSer
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.height(30.dp))
+
         Text("Perfil", fontSize = 24.sp, modifier = Modifier.padding(bottom = 12.dp),
             fontWeight = FontWeight.Bold,
             fontFamily = FontFamily.Serif)
 
-        // Campos editables
+        // Campos de texto editables
         OutlinedTextField(
             value = nombres,
             onValueChange = { nombres = it },
@@ -112,7 +137,7 @@ fun contenidoPantallaDePerfil(navController: NavController, uid: String, authSer
             value = correo,
             onValueChange = { correo = it },
             label = { Text("Correo") },
-            readOnly = true,
+            readOnly = true, // El correo no es editable
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
             modifier = Modifier.fillMaxWidth()
         )
@@ -120,7 +145,7 @@ fun contenidoPantallaDePerfil(navController: NavController, uid: String, authSer
             value = contrasena,
             onValueChange = { contrasena = it },
             label = { Text("Contraseña") },
-            readOnly = true,
+            readOnly = true, // La contraseña no es editable desde esta pantalla
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
@@ -147,53 +172,155 @@ fun contenidoPantallaDePerfil(navController: NavController, uid: String, authSer
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        Row(
+        Column(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween // Espaciado entre los botones
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(10.dp) // Espacio entre los grupos de botones
         ) {
-            // Botón para alternar entre modo de edición y visualización, y guardar cambios
-            Button(onClick = {
-                if (isEditing) {
-                    // Guardar los cambios
-                    user?.let {
-                        it.name = nombres
-                        it.lastname = apellidos
-                        it.number = telefono
-                        it.email = correo
-                        it.password = contrasena
-                        it.cui = cui
-                        it.department = departamento
-                        it.municipality = municipio
+            // Primera fila con dos botones
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly // Espacio uniforme entre los botones
+            ) {
+                Button(onClick = {
+                    if (isEditing) {
+                        // Código para guardar los cambios
+                        if (validarCampos(nombres, apellidos, telefono, cui, context)) {
+                            // Validar CUI y obtener municipio y departamento
+                            val (nuevoMunicipio, nuevoDepartamento) = validarCUI.obtenerMunicipioYDepartamento(cui)
 
-                        firestoreService.updateUserInFirestore(it) { success ->
-                            if (success) {
-                                Toast.makeText(context, "Perfil actualizado con éxito", Toast.LENGTH_SHORT).show()
-                                isEditing = false // Salir del modo de edición
+                            if (nuevoMunicipio.isNotEmpty() && nuevoDepartamento.isNotEmpty()) {
+                                // Actualizar los estados con los nuevos valores
+                                municipio = nuevoMunicipio
+                                departamento = nuevoDepartamento
+
+                                // Actualizar la información del usuario
+                                user?.let {
+                                    it.name = nombres
+                                    it.lastname = apellidos
+                                    it.number = telefono
+                                    it.cui = cui
+                                    it.department = departamento // Usar el estado actualizado
+                                    it.municipality = municipio // Usar el estado actualizado
+
+                                    firestoreService.updateUserInFirestore(it) { success ->
+                                        if (success) {
+                                            Toast.makeText(context, "Perfil actualizado con éxito", Toast.LENGTH_SHORT).show()
+                                            isEditing = false // Salir del modo de edición
+                                        } else {
+                                            Toast.makeText(context, "Error al actualizar perfil", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                }
                             } else {
-                                Toast.makeText(context, "Error al actualizar perfil", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "CUI inválido, actualice el campo", Toast.LENGTH_SHORT).show()
                             }
                         }
+                    } else {
+                        isEditing = true // Entrar en modo de edición
                     }
-                } else {
-                    // Cambiar al modo de edición
-                    isEditing = true
+                }) {
+                    Text(text = if (isEditing) "Guardar Cambios" else "Editar Perfil")
                 }
-            }) {
-                Text(text = if (isEditing) "Guardar Cambios" else "Editar Perfil")
+
+                Button(
+                    onClick = {
+                        authService.logoutUser {
+                            navController.navigate(ManejoDeLasPantallasDeLaApp.PantallaConInfoApp.ruta)
+                            Toast.makeText(context, "Sesión cerrada", Toast.LENGTH_SHORT).show()
+                        }
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                ) {
+                    Text(text = "Cerrar Sesión", color = Color.White)
+                }
             }
 
-            // Botón para cerrar sesión
+            // Botón para eliminar cuenta
             Button(
                 onClick = {
-                    authService.logoutUser {
-                        navController.navigate(ManejoDeLasPantallasDeLaApp.PantallaConInfoApp.ruta)
-                        Toast.makeText(context, "Sesión cerrada", Toast.LENGTH_SHORT).show()
-                    }
+                    showDeleteConfirmation = true
+                    isDeleteButtonEnabled = false
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
             ) {
-                Text(text = "Cerrar Sesión", color = Color.White)
+                Text(text = "Eliminar Cuenta", color = Color.White)
+            }
+
+            // Diálogo de confirmación de eliminación de cuenta
+            if (showDeleteConfirmation) {
+                confirmarEliminacionDialog(
+                    timerText = timerText,
+                    isDeleteButtonEnabled = isDeleteButtonEnabled,
+                    onCancel = { showDeleteConfirmation = false },
+                    onDelete = {
+                        firestoreService.deleteUserFromFirestore(user!!) {
+                            if (it) {
+                                Toast.makeText(context, "Cuenta eliminada con éxito", Toast.LENGTH_SHORT).show()
+                                navController.popBackStack()
+                            } else {
+                                Toast.makeText(context, "Error al eliminar la cuenta", Toast.LENGTH_SHORT).show()
+                            }
+                            showDeleteConfirmation = false
+                        }
+                    }
+                )
             }
         }
     }
+}
+
+@Composable
+fun confirmarEliminacionDialog(
+    timerText: String,
+    isDeleteButtonEnabled: Boolean,
+    onCancel: () -> Unit,
+    onDelete: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onCancel,
+        title = { Text(text = "Confirmar eliminación de cuenta") },
+        text = { Text(text = "¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.") },
+        confirmButton = {
+            Button(
+                onClick = onDelete,
+                enabled = isDeleteButtonEnabled,
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+            ) {
+                Text(text = timerText, color = Color.White)
+            }
+        },
+        dismissButton = {
+            Button(onClick = onCancel) {
+                Text(text = "Cancelar")
+            }
+        }
+    )
+}
+
+// Función para validar los campos
+fun validarCampos(
+    nombres: String,
+    apellidos: String,
+    telefono: String,
+    cui: String,
+    context: android.content.Context
+): Boolean {
+    if (!Validaciones.isValidName(nombres)) {
+        Toast.makeText(context, "Nombres inválidos", Toast.LENGTH_SHORT).show()
+        return false
+    }
+    if (!Validaciones.isValidName(apellidos)) {
+        Toast.makeText(context, "Apellidos inválidos", Toast.LENGTH_SHORT).show()
+        return false
+    }
+    if (!Validaciones.isValidPhone(telefono)) {
+        Toast.makeText(context, "Teléfono inválido", Toast.LENGTH_SHORT).show()
+        return false
+    }
+    if (!Validaciones.isValidCUI(cui)) {
+        Toast.makeText(context, "CUI inválido", Toast.LENGTH_SHORT).show()
+        return false
+    }
+    return true
 }

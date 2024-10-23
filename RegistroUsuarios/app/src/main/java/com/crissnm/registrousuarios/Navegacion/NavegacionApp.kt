@@ -1,25 +1,17 @@
 package com.crissnm.registrousuarios.Navegacion
 
-import android.widget.Toast
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.crissnm.registrousuarios.ManejoDeUsuarios.User
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserAuthService
-import com.crissnm.registrousuarios.ManejoDeUsuarios.UserFireStoreService
+import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaConInfoApp
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeBienvenida
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeInicio
-import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaConInfoApp
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeLogin
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeNotificacion
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDePerfil
@@ -64,7 +56,7 @@ fun navegacionDeLaApp() {
             PantallaDetalleDeLaAlerta(navController)
         }
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaDeNotificacion.ruta) {
-            PantallaDeNotificacion(navController)
+            PantallaDeNotificacion(navController =  navController)
         }
         composable(
             route = ManejoDeLasPantallasDeLaApp.PantallaDePerfil.ruta + "/{uid}",

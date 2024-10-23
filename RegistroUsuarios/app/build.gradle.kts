@@ -51,6 +51,7 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.core)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -69,8 +70,9 @@ dependencies {
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.firebase.auth.ktx)
     implementation(libs.firebase.firestore.ktx)
-    implementation("com.google.firebase:firebase-auth-ktx:23.0.0")
-    implementation("androidx.room:room-ktx:2.6.1")
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.androidx.room.ktx)
+    implementation(libs.play.services)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

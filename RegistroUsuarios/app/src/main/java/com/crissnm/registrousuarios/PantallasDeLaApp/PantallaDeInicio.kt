@@ -2,14 +2,11 @@ package com.crissnm.registrousuarios.PantallasDeLaApp
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.util.Log
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -46,6 +43,7 @@ fun contenidoPantallaDeInicio(
     onButtonStatusChange: (String, Boolean) -> Unit
 ) {
     val uid = navController.currentBackStackEntry?.arguments?.getString("uid")
+    //val alertId = navController.currentBackStackEntry?.arguments?.getString("alertId")
     val context = LocalContext.current
     val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
     val permissionsState = rememberMultiplePermissionsState(
@@ -140,10 +138,11 @@ fun contenidoPantallaDeInicio(
     ) {
         buttonConfigs.forEachIndexed { index, buttonConfig ->
             val buttonId = "alertButton_$index" // ID único para cada botón
-            //var isButtonEnabled = false
 
             BotonDeAlerta(
                 uid = uid.toString(),
+                idAlert = "",
+                buttonId = buttonId,
                 navController = navController,
                 buttonConfig = buttonConfig,
                 fusedLocationClient = fusedLocationClient,

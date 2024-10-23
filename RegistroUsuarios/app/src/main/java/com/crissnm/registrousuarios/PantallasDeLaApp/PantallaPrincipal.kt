@@ -39,9 +39,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.crissnm.registrousuarios.Componentes.Inicio.ItemDeLaBarra
-import com.crissnm.registrousuarios.ManejoDeUsuarios.User
+import com.crissnm.registrousuarios.Componentes.Notificacion.Notificacion
+import com.crissnm.registrousuarios.Componentes.Notificacion.NotificacionRepository
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserAuthService
-import com.crissnm.registrousuarios.Navegacion.ManejoDeLasPantallasDeLaApp
 import com.crissnm.registrousuarios.R
 import com.google.firebase.auth.FirebaseAuth
 
@@ -49,13 +49,16 @@ import com.google.firebase.auth.FirebaseAuth
 fun PantallaPrincipal(
     navController: NavController,
     buttonStates: MutableMap<String, Boolean>,
-    onButtonStatusChange: (String, Boolean) -> Unit
+    onButtonStatusChange: (String, Boolean) -> Unit,
 ) {
-    // Pasar los estados al contenido de la pantalla
+    val notificaciones = NotificacionRepository.notificaciones // Obtener notificaciones del repositorio
+    val contadorDeNotificaciones by remember { NotificacionRepository.contadorDeNotificaciones }
     barraDeNavegacionInferior(
         navController = navController,
         buttonStates = buttonStates,
-        onButtonStatusChange = onButtonStatusChange
+        onButtonStatusChange = onButtonStatusChange,
+        notificaciones = notificaciones, // Pasar aquí la lista de notificaciones
+        contadorDeNotificaciones = contadorDeNotificaciones // Pasar aquí el contador de notificaciones
     )
 }
 
@@ -93,12 +96,14 @@ fun barraDeInformacionSuperior(){
 fun barraDeNavegacionInferior(
     navController: NavController,
     buttonStates: MutableMap<String, Boolean>,
-    onButtonStatusChange: (String, Boolean) -> Unit
+    onButtonStatusChange: (String, Boolean) -> Unit,
+    notificaciones: List<Notificacion>,
+    contadorDeNotificaciones: Int // Agregar parámetro de contador
 ) {
     val listaDeItemsDeLaBarraDeNavegacion = listOf(
         ItemDeLaBarra("Inicio", Icons.Default.Home, 0),
         ItemDeLaBarra("Perfil", Icons.Default.Person, 0),
-        ItemDeLaBarra("Notificaciones", Icons.Default.Notifications, 2)
+        ItemDeLaBarra("Notificaciones", Icons.Default.Notifications, contadorDeNotificaciones) // Usar contador
     )
 
     var selectedIndex by rememberSaveable { mutableStateOf(0) }
@@ -138,7 +143,8 @@ fun barraDeNavegacionInferior(
             selectedIndex = selectedIndex,
             navController = navController,
             buttonStates = buttonStates,
-            onButtonStatusChange = onButtonStatusChange
+            onButtonStatusChange = onButtonStatusChange,
+            notificaciones = NotificacionRepository.notificaciones
         )
         barraDeInformacionSuperior()
     }
@@ -150,7 +156,8 @@ fun contenidoDeLaBarraDeNavegacionInferior(
     selectedIndex: Int,
     navController: NavController,
     buttonStates: MutableMap<String, Boolean>,
-    onButtonStatusChange: (String, Boolean) -> Unit
+    onButtonStatusChange: (String, Boolean) -> Unit,
+    notificaciones: List<Notificacion> // Agregar parámetro de notificaciones
 ) {
     when (selectedIndex) {
         0 -> PantallaDeInicio(
@@ -163,6 +170,6 @@ fun contenidoDeLaBarraDeNavegacionInferior(
             val authService = UserAuthService()
             PantallaDePerfil(navController = navController, uid = uid, authService = authService)
         }
-        2 -> PantallaDeNotificacion(navController)
+        2 -> PantallaDeNotificacion(navController = navController)
     }
 }
