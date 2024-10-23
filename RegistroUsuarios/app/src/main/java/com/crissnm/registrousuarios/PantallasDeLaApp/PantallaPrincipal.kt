@@ -24,6 +24,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -40,7 +41,9 @@ import androidx.navigation.NavController
 import com.crissnm.registrousuarios.Componentes.Inicio.ItemDeLaBarra
 import com.crissnm.registrousuarios.ManejoDeUsuarios.User
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserAuthService
+import com.crissnm.registrousuarios.Navegacion.ManejoDeLasPantallasDeLaApp
 import com.crissnm.registrousuarios.R
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun PantallaPrincipal(
@@ -156,19 +159,9 @@ fun contenidoDeLaBarraDeNavegacionInferior(
             onButtonStatusChange = onButtonStatusChange
         )
         1 -> {
-            val newUser = User(
-                uid = "",
-                name = "",
-                lastname = "",
-                email = "",
-                password = "",
-                cui = "",
-                number = "",
-                department = "",
-                municipality = ""
-            )
+            val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
             val authService = UserAuthService()
-            PantallaDePerfil(navController = navController, user = newUser, authService = authService)
+            PantallaDePerfil(navController = navController, uid = uid, authService = authService)
         }
         2 -> PantallaDeNotificacion(navController)
     }

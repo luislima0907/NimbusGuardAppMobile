@@ -1,8 +1,14 @@
 package com.crissnm.registrousuarios.Navegacion
 
+import android.widget.Toast
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -10,6 +16,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.crissnm.registrousuarios.ManejoDeUsuarios.User
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserAuthService
+import com.crissnm.registrousuarios.ManejoDeUsuarios.UserFireStoreService
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeBienvenida
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeInicio
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaConInfoApp
@@ -59,19 +66,12 @@ fun navegacionDeLaApp() {
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaDeNotificacion.ruta) {
             PantallaDeNotificacion(navController)
         }
-        composable(route = ManejoDeLasPantallasDeLaApp.PantallaDePerfil.ruta) {
-            val newUser = User(
-                uid = "",
-                name = "",
-                lastname = "",
-                email = "",
-                password = "",
-                cui = "",
-                number = "",
-                department = "",
-                municipality = ""
-            )
-            PantallaDePerfil(navController = navController,user = newUser, authService = authService) // Pasando el usuario
+        composable(
+            route = ManejoDeLasPantallasDeLaApp.PantallaDePerfil.ruta + "/{uid}",
+            arguments = listOf(navArgument("uid") { type = NavType.StringType })
+        ) {
+            val uid = it.arguments?.getString("uid") ?: ""
+            PantallaDePerfil(navController = navController, uid = uid, authService = authService)
         }
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaDeBienvenida.ruta){
             PantallaDeBienvenida(navController)

@@ -18,16 +18,21 @@ import androidx.navigation.NavController
 import com.crissnm.registrousuarios.Navegacion.ManejoDeLasPantallasDeLaApp
 import com.crissnm.registrousuarios.R
 import com.crissnm.registrousuarios.R.color.celesteClaro
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 
 @Composable
 fun PantallaDeBienvenida(navController: NavController){
     LaunchedEffect(key1 = true) {
-        delay(3000)
+        delay(1000)
         navController.popBackStack()
-        navController.navigate(ManejoDeLasPantallasDeLaApp.PantallaConInfoApp.ruta)
+        if (!FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()) {
+            val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+            navController.navigate(ManejoDeLasPantallasDeLaApp.PantallaPrincipal.ruta + "/$uid")
+        } else {
+            navController.navigate(ManejoDeLasPantallasDeLaApp.PantallaConInfoApp.ruta)
+        }
     }
-    //navController.navigate(ManejoDeLasPantallasDeLaApp.PantallaDeRegistro.ruta)
     Splash()
 }
 

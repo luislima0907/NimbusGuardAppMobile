@@ -59,10 +59,14 @@ class UserAuthService {
                 }
             }
     }
-    fun logoutUser(callback: () -> Unit) {
-        auth.signOut()
-        callback() // Redirigir o manejar el cierre de sesión
+    fun logoutUser(onComplete: () -> Unit) {
+        FirebaseAuth.getInstance().signOut()
+        onComplete() // Asegúrate de que esto se llame después de cerrar sesión
     }
+//    fun logoutUser(callback: () -> Unit) {
+//        auth.signOut()
+//        callback() // Redirigir o manejar el cierre de sesión
+//    }
     fun deleteUserFromFirestore(user: User, callback: (Boolean) -> Unit) {
         firebaseStoreUserRef.document(user.uid).delete()
             .addOnSuccessListener {
