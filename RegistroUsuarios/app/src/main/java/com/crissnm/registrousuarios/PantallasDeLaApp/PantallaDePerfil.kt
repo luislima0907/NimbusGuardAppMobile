@@ -11,6 +11,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -35,11 +37,8 @@ fun contenidoPantallaDePerfil(navController: NavController, uid: String, authSer
     // Estado para almacenar el objeto User
     var user by remember { mutableStateOf<User?>(null) }
 
-    // Estado para mostrar el diálogo de edición de perfil
-    var showEditDialog by remember { mutableStateOf(false) }
-
-    // Estado para el diálogo de confirmación de eliminación
-    var showDeleteConfirmation by remember { mutableStateOf(false) }
+    // Estado para activar el modo de edición
+    var isEditing by remember { mutableStateOf(false) }
 
     // Usar LaunchedEffect para recuperar el usuario basado en el UID
     LaunchedEffect(uid) {
@@ -47,7 +46,6 @@ fun contenidoPantallaDePerfil(navController: NavController, uid: String, authSer
             if (fetchedUser != null) {
                 user = fetchedUser
             } else {
-                // Mostramos un mensaje de error si el usuario no es encontrado
                 Toast.makeText(context, "Usuario no encontrado", Toast.LENGTH_SHORT).show()
             }
         }
@@ -63,7 +61,6 @@ fun contenidoPantallaDePerfil(navController: NavController, uid: String, authSer
     var departamento by remember { mutableStateOf(user?.department ?: "") }
     var municipio by remember { mutableStateOf(user?.municipality ?: "") }
 
-    // Actualizar los valores de los campos editables cuando se carga el usuario
     LaunchedEffect(user) {
         user?.let {
             nombres = it.name
@@ -77,258 +74,126 @@ fun contenidoPantallaDePerfil(navController: NavController, uid: String, authSer
         }
     }
 
-    // Estado del contador para eliminar cuenta
-    var isDeleteButtonEnabled by remember { mutableStateOf(false) }
-    var timerText by remember { mutableStateOf("Eliminar Cuenta (10)") } // Texto inicial del botón
-
-    // Temporizador de cuenta regresiva de 10 segundos
-    LaunchedEffect(showDeleteConfirmation) {
-        if (showDeleteConfirmation) {
-            object : CountDownTimer(10000, 1000) {
-                override fun onTick(millisUntilFinished: Long) {
-                    val secondsLeft = millisUntilFinished / 1000
-                    timerText = "Eliminar Cuenta ($secondsLeft)"
-                }
-
-                override fun onFinish() {
-                    isDeleteButtonEnabled = true
-                    timerText = "Eliminar Cuenta"
-                }
-            }.start()
-        }
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp),
+            .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 40.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text("Perfil", fontSize = 24.sp, modifier = Modifier.padding(bottom = 16.dp))
+        Text("Perfil", fontSize = 24.sp, modifier = Modifier.padding(bottom = 12.dp),
+            fontWeight = FontWeight.Bold,
+            fontFamily = FontFamily.Serif)
 
-        // Mostrar la información del usuario recuperada
-        Text(text = "Nombres: $nombres")
-        Text(text = "Apellidos: $apellidos")
-        Text(text = "Teléfono: $telefono")
-        Text(text = "Correo: $correo")
-        //Text(text = "Contraseña: $contrasena")
-        Text(text = "CUI: $cui")
-        Text(text = "Departamento: $departamento")
-        Text(text = "Municipio: $municipio")
+        // Campos editables
+        OutlinedTextField(
+            value = nombres,
+            onValueChange = { nombres = it },
+            label = { Text("Nombres") },
+            readOnly = !isEditing,
+            modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = apellidos,
+            onValueChange = { apellidos = it },
+            label = { Text("Apellidos") },
+            readOnly = !isEditing,
+            modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = telefono,
+            onValueChange = { telefono = it },
+            label = { Text("Teléfono") },
+            readOnly = !isEditing,
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
+            modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = correo,
+            onValueChange = { correo = it },
+            label = { Text("Correo") },
+            readOnly = true,
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
+            modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = contrasena,
+            onValueChange = { contrasena = it },
+            label = { Text("Contraseña") },
+            readOnly = true,
+            modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = cui,
+            onValueChange = { cui = it },
+            label = { Text("CUI") },
+            readOnly = !isEditing,
+            modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = departamento,
+            onValueChange = { departamento = it },
+            label = { Text("Departamento") },
+            readOnly = !isEditing,
+            modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = municipio,
+            onValueChange = { municipio = it },
+            label = { Text("Municipio") },
+            readOnly = !isEditing,
+            modifier = Modifier.fillMaxWidth()
+        )
 
         Spacer(modifier = Modifier.height(20.dp))
 
-        // Botón para abrir el diálogo de edición de perfil
-        Button(onClick = {
-            showEditDialog = true // Mostrar el diálogo para editar el perfil
-        }) {
-            Text(text = "Editar Perfil")
-        }
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Botón para eliminar la cuenta del usuario
-        Button(
-            onClick = {
-                showDeleteConfirmation = true // Mostrar el diálogo de confirmación
-                isDeleteButtonEnabled = false // Deshabilitar el botón de eliminación
-            },
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween // Espaciado entre los botones
         ) {
-            Text(text = "Eliminar Cuenta", color = Color.White)
-        }
+            // Botón para alternar entre modo de edición y visualización, y guardar cambios
+            Button(onClick = {
+                if (isEditing) {
+                    // Guardar los cambios
+                    user?.let {
+                        it.name = nombres
+                        it.lastname = apellidos
+                        it.number = telefono
+                        it.email = correo
+                        it.password = contrasena
+                        it.cui = cui
+                        it.department = departamento
+                        it.municipality = municipio
 
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Botón para cerrar sesión
-        Button(
-            onClick = {
-                authService.logoutUser {
-                    navController.navigate(ManejoDeLasPantallasDeLaApp.PantallaConInfoApp.ruta)
-                    Toast.makeText(context, "Sesión cerrada", Toast.LENGTH_SHORT).show()
-                }
-            },
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
-        ) {
-            Text(text = "Cerrar Sesión", color = Color.White)
-        }
-
-
-        // Diálogo de confirmación de eliminación
-        if (showDeleteConfirmation) {
-            AlertDialog(
-                onDismissRequest = {
-                    showDeleteConfirmation = false // Cierra el diálogo si se cancela
-                },
-                title = {
-                    Text(text = "Confirmar eliminación de cuenta")
-                },
-                text = {
-                    Text("¿Estás seguro de que deseas eliminar tu cuenta? Esta acción no se puede deshacer.")
-                },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            if (isDeleteButtonEnabled) {
-                                firestoreService.deleteUserFromFirestore(user!!) {
-                                    if (it) {
-                                        Toast.makeText(context, "Cuenta eliminada con éxito", Toast.LENGTH_SHORT).show()
-                                        navController.popBackStack()
-                                    } else {
-                                        Toast.makeText(context, "Error al eliminar la cuenta", Toast.LENGTH_SHORT).show()
-                                    }
-                                }
-                                showDeleteConfirmation = false
+                        firestoreService.updateUserInFirestore(it) { success ->
+                            if (success) {
+                                Toast.makeText(context, "Perfil actualizado con éxito", Toast.LENGTH_SHORT).show()
+                                isEditing = false // Salir del modo de edición
+                            } else {
+                                Toast.makeText(context, "Error al actualizar perfil", Toast.LENGTH_SHORT).show()
                             }
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                        enabled = isDeleteButtonEnabled
-                    ) {
-                        Text(text = timerText, color = Color.White) // Mostrar el texto actualizado
+                        }
                     }
-                },
-                dismissButton = {
-                    Button(onClick = {
-                        showDeleteConfirmation = false // Cerrar el diálogo si el usuario se arrepiente
-                        Toast.makeText(context, "Eliminación cancelada", Toast.LENGTH_SHORT).show()
-                    }) {
-                        Text(text = "Cancelar")
-                    }
+                } else {
+                    // Cambiar al modo de edición
+                    isEditing = true
                 }
-            )
-        }
+            }) {
+                Text(text = if (isEditing) "Guardar Cambios" else "Editar Perfil")
+            }
 
-        // Diálogo de edición de perfil
-        if (showEditDialog) {
-            AlertDialog(
-                onDismissRequest = {
-                    showEditDialog = false // Cerrar el diálogo si se cancela
-                },
-                title = {
-                    Text(text = "Editar Perfil")
-                },
-                text = {
-                    // Campos editables dentro del diálogo
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        OutlinedTextField(
-                            value = nombres,
-                            onValueChange = { nombres = it },
-                            label = { Text("Nombres") },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
-                        )
-
-                        OutlinedTextField(
-                            value = apellidos,
-                            onValueChange = { apellidos = it },
-                            label = { Text("Apellidos") },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
-                        )
-
-                        OutlinedTextField(
-                            value = telefono,
-                            onValueChange = { telefono = it },
-                            label = { Text("Teléfono") },
-                            modifier = Modifier.fillMaxWidth(),
-                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
-                            singleLine = true
-                        )
-
-                        OutlinedTextField(
-                            value = correo,
-                            onValueChange = { correo = it },
-                            label = { Text("Correo") },
-                            modifier = Modifier.fillMaxWidth(),
-                            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
-                            singleLine = true
-                        )
-
-                        OutlinedTextField(
-                            value = contrasena,
-                            onValueChange = { contrasena = it },
-                            label = { Text("Contraseña") },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
-                        )
-
-                        OutlinedTextField(
-                            value = cui,
-                            onValueChange = { cui = it },
-                            label = { Text("CUI") },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
-                        )
-
-                        OutlinedTextField(
-                            value = departamento,
-                            onValueChange = { departamento = it },
-                            label = { Text("Departamento") },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
-                        )
-
-                        OutlinedTextField(
-                            value = municipio,
-                            onValueChange = { municipio = it },
-                            label = { Text("Municipio") },
-                            modifier = Modifier.fillMaxWidth(),
-                            singleLine = true
-                        )
+            // Botón para cerrar sesión
+            Button(
+                onClick = {
+                    authService.logoutUser {
+                        navController.navigate(ManejoDeLasPantallasDeLaApp.PantallaConInfoApp.ruta)
+                        Toast.makeText(context, "Sesión cerrada", Toast.LENGTH_SHORT).show()
                     }
                 },
-                confirmButton = {
-                    Button(
-                        onClick = {
-                            // Validaciones antes de actualizar
-                            when {
-                                nombres.isBlank() || apellidos.isBlank() || telefono.isBlank() || correo.isBlank() || contrasena.isBlank() || cui.isBlank() || departamento.isBlank() || municipio.isBlank() -> {
-                                    Toast.makeText(context, "Todos los campos deben estar completos", Toast.LENGTH_SHORT).show()
-                                }
-                                !Validaciones.isValidCorreo(correo) -> {
-                                    Toast.makeText(context, "Correo inválido", Toast.LENGTH_SHORT).show()
-                                }
-                                else -> {
-                                    // Actualización directa en el objeto user
-                                    user!!.name = nombres
-                                    user!!.lastname = apellidos
-                                    user!!.number = telefono
-                                    user!!.email = correo
-                                    user!!.password = contrasena
-                                    user!!.cui = cui
-                                    user!!.department = departamento
-                                    user!!.municipality = municipio
-
-                                    // Actualización en Firestore
-                                    firestoreService.updateUserInFirestore(user!!) {
-                                        if (it) {
-                                            Toast.makeText(context, "Perfil actualizado con éxito", Toast.LENGTH_SHORT).show()
-                                            showEditDialog = false // Cierra el diálogo después de la actualización
-                                        } else {
-                                            Toast.makeText(context, "Error al actualizar perfil", Toast.LENGTH_SHORT).show()
-                                        }
-                                    }
-                                }
-                            }
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Green)
-                    ) {
-                        Text(text = "Guardar Cambios", color = Color.White)
-                    }
-                },
-                dismissButton = {
-                    Button(onClick = {
-                        showEditDialog = false // Cerrar el diálogo sin cambios
-                    }) {
-                        Text(text = "Cancelar")
-                    }
-                }
-            )
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+            ) {
+                Text(text = "Cerrar Sesión", color = Color.White)
+            }
         }
     }
 }

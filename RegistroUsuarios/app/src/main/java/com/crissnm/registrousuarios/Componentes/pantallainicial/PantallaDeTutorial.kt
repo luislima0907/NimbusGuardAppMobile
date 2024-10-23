@@ -63,6 +63,7 @@ fun InstruccionesUso() {
 @Composable
 fun PhotoCarousel() {
     val images = listOf(
+        painterResource(id = R.drawable.app0),
         painterResource(id = R.drawable.app1),
         painterResource(id = R.drawable.app2),
         painterResource(id = R.drawable.app3)

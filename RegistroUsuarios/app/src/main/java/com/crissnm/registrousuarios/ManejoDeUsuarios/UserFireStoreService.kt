@@ -79,7 +79,6 @@ class UserFireStoreService {
                 Log.e("ERROR", "Error al actualizar el usuario: ${exception.message}")
                 callback(false)
             }
+
     }
 }
-
-

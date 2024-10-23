@@ -2,16 +2,27 @@ package com.crissnm.registrousuarios.PantallasDeLaApp
 
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -19,12 +30,10 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.navigation.NavController
 import com.crissnm.registrousuarios.Componentes.Login.ContrasenaField
 import com.crissnm.registrousuarios.Componentes.Login.CorreoField
+import com.crissnm.registrousuarios.Componentes.Login.ImagenLogin
 import com.crissnm.registrousuarios.ManejoDeUsuarios.User
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserAuthService
-import com.crissnm.registrousuarios.ManejoDeUsuarios.UserFireStoreService
 import com.crissnm.registrousuarios.ManejoDeUsuarios.Validaciones
-import com.crissnm.registrousuarios.Navegacion.ManejoDeLasPantallasDeLaApp
-import com.google.firebase.firestore.FirebaseFirestore
 
 @Composable
 fun PantallaDeLogin(navController: NavController, users: List<User>) {
@@ -37,6 +46,8 @@ fun LoginForm(navController: NavController, users: List<User>) {
     val correo = remember { mutableStateOf("") }
     val contrasena = remember { mutableStateOf("") }
     val context = LocalContext.current
+    val userAuthService = UserAuthService()
+
 
     // Estado para controlar el diálogo de error o éxito
     val showLoginSuccessDialog = remember { mutableStateOf(false) }
@@ -45,10 +56,36 @@ fun LoginForm(navController: NavController, users: List<User>) {
 
     val scrollState = rememberScrollState() // Estado para el scroll
 
+    // Validar los campos antes de iniciar sesion
+    fun validarCredenciales(
+        correo: String,
+        contrasena: String,
+        context: Context,
+        onValidacionFallida: (String) -> Unit
+    ): Boolean {
+        if (correo.isBlank()) {
+            onValidacionFallida("El campo de correo está vacío")
+            return false
+        }
+
+        if (contrasena.isBlank()) {
+            onValidacionFallida("El campo de contraseña está vacío")
+            return false
+        }
+
+        if (!Validaciones.isValidCorreo(correo)) {
+            onValidacionFallida("Correo inválido")
+            return false
+        }
+
+        return true // Las validaciones han sido exitosas
+    }
+
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 20.dp, end = 20.dp, top = 90.dp, bottom = 10.dp)
+            .padding(start = 20.dp, end = 20.dp, top = 210.dp, bottom = 50.dp)
             .verticalScroll(scrollState), // Habilitar desplazamiento
         verticalArrangement = Arrangement.spacedBy(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
@@ -61,6 +98,10 @@ fun LoginForm(navController: NavController, users: List<User>) {
             fontFamily = FontFamily.Serif
         )
 
+        Spacer(modifier = Modifier.height(2.dp))
+
+        // Imagen de inicio de sesión
+        ImagenLogin()
         Spacer(modifier = Modifier.height(16.dp))
 
         // Campos de texto para correo y contraseña

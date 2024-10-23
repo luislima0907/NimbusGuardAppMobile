@@ -73,7 +73,7 @@ fun RegistrationForm(navController: NavController) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(start = 20.dp, end = 20.dp, top = 90.dp, bottom = 10.dp)
+            .padding(start = 20.dp, end = 20.dp, top = 70.dp, bottom = 10.dp)
             .verticalScroll(scrollState), // Habilitar desplazamiento
         verticalArrangement = Arrangement.spacedBy(10.dp),
         horizontalAlignment = Alignment.CenterHorizontally
