@@ -71,7 +71,7 @@ fun barraDeInformacionSuperior(){
         title = {
             Text(text = "Bienvenido a Nimbus Guard",
                 color = Color.Black,
-                fontWeight = FontWeight.Bold,
+                //fontWeight = FontWeight.Bold,
                 fontSize = 27.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),

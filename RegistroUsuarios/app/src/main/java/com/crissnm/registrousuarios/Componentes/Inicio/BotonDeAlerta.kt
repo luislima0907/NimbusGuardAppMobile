@@ -72,7 +72,7 @@ fun BotonDeAlerta(
                         latitud = lat
                         longitud = lon
                         buttonTitle = buttonConfig.title
-                        Toast.makeText(context, "Latitud: $lat, Longitud: $lon", Toast.LENGTH_SHORT).show()
+                        //Toast.makeText(context, "Latitud: $lat, Longitud: $lon", Toast.LENGTH_SHORT).show()
                         showAlertDialog = true
                     }
                 } else {

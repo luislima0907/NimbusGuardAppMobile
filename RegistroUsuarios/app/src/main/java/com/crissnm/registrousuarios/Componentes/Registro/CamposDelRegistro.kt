@@ -51,7 +51,7 @@ fun Titulo() {
             modifier = Modifier.padding(bottom = 0.dp),
             color = Color.Black,
             fontSize = 30.sp,
-            fontWeight = FontWeight.Bold,
+            //fontWeight = FontWeight.Bold,
             fontFamily = fontFamily
         )
     }
@@ -453,9 +453,9 @@ fun RegisterUserButton(
         ) {
             Text(
                 text = "Registrarme",
-                fontWeight = FontWeight.Bold,
+                //fontWeight = FontWeight.Bold,
                 fontFamily = fontFamily,
-                fontSize = 16.sp
+                fontSize = 18.sp
             )
         }
         Spacer(modifier = Modifier.height(1.dp))

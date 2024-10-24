@@ -5,6 +5,7 @@ import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -16,6 +17,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.crissnm.registrousuarios.Componentes.Inicio.BotonDeAlerta
 import com.crissnm.registrousuarios.Componentes.Inicio.ButtonBuilder
+import com.crissnm.registrousuarios.Componentes.pantallainicial.fontFamily
 import com.crissnm.registrousuarios.R
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
@@ -136,6 +138,12 @@ fun contenidoPantallaDeInicio(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Text(
+            text = "Presiona un Botón para Enviar una Alerta",
+            color = Color.Black,
+            fontFamily = fontFamily,
+            fontSize = 20.sp
+            )
         buttonConfigs.forEachIndexed { index, buttonConfig ->
             val buttonId = "alertButton_$index" // ID único para cada botón
 

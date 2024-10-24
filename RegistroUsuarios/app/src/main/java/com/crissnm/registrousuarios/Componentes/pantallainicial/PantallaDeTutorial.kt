@@ -57,9 +57,8 @@ fun TextoBienvenida() {
         modifier = Modifier.padding(bottom = 8.dp),
         color = Color.Black,
         fontSize = 27.sp,
-        fontWeight = FontWeight.Bold,
+        //fontWeight = FontWeight.Bold,
         fontFamily = fontFamily
-
     )
 }
 
@@ -129,9 +128,9 @@ fun ActionButtons(navController: NavController) {
             ) {
             Text(
                 text = "Iniciar Sesión",
-                fontWeight = FontWeight.Bold,
+                //fontWeight = FontWeight.Bold,
                 fontFamily = fontFamily,
-                fontSize = 13.sp
+                fontSize = 18.sp
             )
         }
         Button(
@@ -147,9 +146,9 @@ fun ActionButtons(navController: NavController) {
         ) {
             Text(
                 text = "Registrarse",
-                fontWeight = FontWeight.Bold,
+                //fontWeight = FontWeight.Bold,
                 fontFamily = fontFamily,
-                fontSize = 13.sp
+                fontSize = 18.sp
             )
         }
     }

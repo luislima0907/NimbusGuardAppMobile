@@ -16,7 +16,6 @@ import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeLogin
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeNotificacion
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDePerfil
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeRegistro
-import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDetalleDeLaAlerta
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaPrincipal
 
 @Composable
@@ -51,9 +50,6 @@ fun navegacionDeLaApp() {
         composable(
             route = ManejoDeLasPantallasDeLaApp.PantallaConInfoApp.ruta){
             PantallaConInfoApp(navController)
-        }
-        composable(route = ManejoDeLasPantallasDeLaApp.PantallaDetalleDeLaAlerta.ruta) {
-            PantallaDetalleDeLaAlerta(navController)
         }
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaDeNotificacion.ruta) {
             PantallaDeNotificacion(navController =  navController)

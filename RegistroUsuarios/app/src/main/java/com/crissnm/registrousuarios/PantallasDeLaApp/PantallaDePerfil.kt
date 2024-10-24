@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,6 +19,7 @@ import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.crissnm.registrousuarios.Componentes.pantallainicial.fontFamily
 import com.crissnm.registrousuarios.ManejoDeUsuarios.User
@@ -25,17 +27,39 @@ import com.crissnm.registrousuarios.ManejoDeUsuarios.UserAuthService
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserFireStoreService
 import com.crissnm.registrousuarios.ManejoDeUsuarios.Validaciones
 import com.crissnm.registrousuarios.DepYmuni.ValidarCUI // Asegúrate de importar tu clase
+import com.crissnm.registrousuarios.ManejoDeUsuarios.UserProfileViewModel
+import com.crissnm.registrousuarios.ManejoDeUsuarios.UserProfileViewModelFactory
 import com.crissnm.registrousuarios.Navegacion.ManejoDeLasPantallasDeLaApp
 import com.crissnm.registrousuarios.R
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun PantallaDePerfil(navController: NavController, uid: String, authService: UserAuthService) {
-    contenidoPantallaDePerfil(navController, uid, authService)
+    // Obtener instancia del ViewModel
+    val userProfileViewModel: UserProfileViewModel = viewModel(
+        factory = UserProfileViewModelFactory(UserFireStoreService(), ValidarCUI())
+    )
+
+    // Cargar los datos del usuario si no se han cargado
+    LaunchedEffect(uid) {
+        userProfileViewModel.loadUser(uid)
+    }
+
+    contenidoPantallaDePerfil(
+        navController =  navController,
+        userProfileViewModel =  userProfileViewModel,
+        uid =  uid,
+        authService =  authService
+    )
 }
 
 @Composable
-fun contenidoPantallaDePerfil(navController: NavController, uid: String, authService: UserAuthService) {
+fun contenidoPantallaDePerfil(
+    navController: NavController,
+    userProfileViewModel: UserProfileViewModel,
+    uid: String,
+    authService: UserAuthService,
+) {
     val context = LocalContext.current
     val firestoreService = UserFireStoreService()
     val validarCUI = ValidarCUI() // Instancia de ValidarCUI
@@ -61,21 +85,10 @@ fun contenidoPantallaDePerfil(navController: NavController, uid: String, authSer
     }
 
     // Estado para almacenar el objeto User
-    var user by remember { mutableStateOf<User?>(null) }
+    val user by userProfileViewModel.user.observeAsState()
 
     // Estado para activar el modo de edición
     var isEditing by remember { mutableStateOf(false) }
-
-    // Usar LaunchedEffect para recuperar el usuario basado en el UID
-    LaunchedEffect(uid) {
-        firestoreService.getUserbyUid(uid) { fetchedUser ->
-            if (fetchedUser != null) {
-                user = fetchedUser
-            } else {
-                Toast.makeText(context, "Usuario no encontrado", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
 
     // Estados para los campos de texto del perfil
     var nombres by remember { mutableStateOf("") }
@@ -111,7 +124,7 @@ fun contenidoPantallaDePerfil(navController: NavController, uid: String, authSer
         Spacer(modifier = Modifier.height(30.dp))
 
         Text("Perfil", fontSize = 28.sp, modifier = Modifier.padding(bottom = 12.dp),
-            fontWeight = FontWeight.Bold,
+            //fontWeight = FontWeight.Bold,
             fontFamily = fontFamily
         )
 
@@ -158,20 +171,21 @@ fun contenidoPantallaDePerfil(navController: NavController, uid: String, authSer
             onValueChange = { cui = it },
             label = { Text("CUI") },
             readOnly = !isEditing,
+            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
             value = departamento,
             onValueChange = { departamento = it },
             label = { Text("Departamento") },
-            readOnly = !isEditing,
+            readOnly = true,
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
             value = municipio,
             onValueChange = { municipio = it },
             label = { Text("Municipio") },
-            readOnly = !isEditing,
+            readOnly = true,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -225,7 +239,11 @@ fun contenidoPantallaDePerfil(navController: NavController, uid: String, authSer
                         isEditing = true // Entrar en modo de edición
                     }
                 }) {
-                    Text(text = if (isEditing) "Guardar Cambios" else "Editar Perfil")
+                    Text(
+                        text = if (isEditing) "Guardar Cambios" else "Editar Perfil",
+                        color = Color.White,
+                        fontFamily = fontFamily
+                    )
                 }
 
                 Button(
@@ -237,7 +255,11 @@ fun contenidoPantallaDePerfil(navController: NavController, uid: String, authSer
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray)
                 ) {
-                    Text(text = "Cerrar Sesión", color = Color.White)
+                    Text(
+                        text = "Cerrar Sesión",
+                        color = Color.White,
+                        fontFamily = fontFamily
+                    )
                 }
             }
 
@@ -249,7 +271,11 @@ fun contenidoPantallaDePerfil(navController: NavController, uid: String, authSer
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
             ) {
-                Text(text = "Eliminar Cuenta", color = Color.White)
+                Text(
+                    text = "Eliminar Cuenta",
+                    color = Color.White,
+                    fontFamily = fontFamily
+                )
             }
 
             // Diálogo de confirmación de eliminación de cuenta

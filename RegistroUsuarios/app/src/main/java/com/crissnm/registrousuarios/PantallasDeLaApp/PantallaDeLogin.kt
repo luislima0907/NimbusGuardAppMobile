@@ -96,8 +96,8 @@ fun LoginForm(navController: NavController, users: List<User>) {
     ) {
         Text(
             text = "Iniciar Sesión",
-            fontWeight = FontWeight.Bold,
-            fontSize = 30.sp,
+            //fontWeight = FontWeight.Bold,
+            fontSize = 35.sp,
             color = Color.Black,
             fontFamily = fontFamily
         )
@@ -146,8 +146,8 @@ fun LoginForm(navController: NavController, users: List<User>) {
         ) {
             Text(
                 text = "Iniciar Sesión",
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
+                //fontWeight = FontWeight.Bold,
+                fontSize = 20.sp,
                 fontFamily = fontFamily
             )
         }

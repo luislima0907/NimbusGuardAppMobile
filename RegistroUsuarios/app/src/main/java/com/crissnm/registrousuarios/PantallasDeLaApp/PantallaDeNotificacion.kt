@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.crissnm.registrousuarios.Componentes.Notificacion.Notificacion
 import com.crissnm.registrousuarios.Componentes.Notificacion.NotificacionRepository
+import com.crissnm.registrousuarios.Componentes.pantallainicial.fontFamily
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -37,16 +38,17 @@ fun contenidoPantallaDeNotificacion(
     navController: NavController,
     notificaciones: List<Notificacion>
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = Modifier.fillMaxWidth()) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top // Cambia esto a Top
         ) {
-            Spacer(modifier = Modifier.height(100.dp)) // Espaciador para empujar el contenido hacia abajo
+            Spacer(modifier = Modifier.height(130.dp)) // Espaciador para empujar el contenido hacia abajo
             Text(
-                text = "Pantalla de Notificaciones",
-                style = MaterialTheme.typography.titleLarge
+                text = "Notificaciones del Estado de tus Alertas",
+                style = MaterialTheme.typography.titleLarge,
+                fontFamily = fontFamily
             )
 
             LazyColumn(
