@@ -34,6 +34,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.crissnm.registrousuarios.Componentes.pantallainicial.fontFamily
 import com.crissnm.registrousuarios.DepYmuni.ValidarCUI
 import com.crissnm.registrousuarios.ManejoDeUsuarios.Validaciones
 import com.crissnm.registrousuarios.R
@@ -49,9 +50,9 @@ fun Titulo() {
             text = "REGÍSTRATE",
             modifier = Modifier.padding(bottom = 0.dp),
             color = Color.Black,
-            fontSize = 27.sp,
+            fontSize = 30.sp,
             fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Serif
+            fontFamily = fontFamily
         )
     }
 }
@@ -453,7 +454,7 @@ fun RegisterUserButton(
             Text(
                 text = "Registrarme",
                 fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.Serif,
+                fontFamily = fontFamily,
                 fontSize = 16.sp
             )
         }

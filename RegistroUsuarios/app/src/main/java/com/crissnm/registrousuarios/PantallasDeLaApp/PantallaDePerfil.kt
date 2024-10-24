@@ -13,16 +13,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.googlefonts.Font
+import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.crissnm.registrousuarios.Componentes.pantallainicial.fontFamily
 import com.crissnm.registrousuarios.ManejoDeUsuarios.User
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserAuthService
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserFireStoreService
 import com.crissnm.registrousuarios.ManejoDeUsuarios.Validaciones
 import com.crissnm.registrousuarios.DepYmuni.ValidarCUI // Asegúrate de importar tu clase
 import com.crissnm.registrousuarios.Navegacion.ManejoDeLasPantallasDeLaApp
+import com.crissnm.registrousuarios.R
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -106,9 +110,10 @@ fun contenidoPantallaDePerfil(navController: NavController, uid: String, authSer
     ) {
         Spacer(modifier = Modifier.height(30.dp))
 
-        Text("Perfil", fontSize = 24.sp, modifier = Modifier.padding(bottom = 12.dp),
+        Text("Perfil", fontSize = 28.sp, modifier = Modifier.padding(bottom = 12.dp),
             fontWeight = FontWeight.Bold,
-            fontFamily = FontFamily.Serif)
+            fontFamily = fontFamily
+        )
 
         // Campos de texto editables
         OutlinedTextField(
@@ -230,7 +235,7 @@ fun contenidoPantallaDePerfil(navController: NavController, uid: String, authSer
                             Toast.makeText(context, "Sesión cerrada", Toast.LENGTH_SHORT).show()
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.DarkGray)
                 ) {
                     Text(text = "Cerrar Sesión", color = Color.White)
                 }

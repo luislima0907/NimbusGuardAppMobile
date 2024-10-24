@@ -41,6 +41,7 @@ import androidx.navigation.NavController
 import com.crissnm.registrousuarios.Componentes.Inicio.ItemDeLaBarra
 import com.crissnm.registrousuarios.Componentes.Notificacion.Notificacion
 import com.crissnm.registrousuarios.Componentes.Notificacion.NotificacionRepository
+import com.crissnm.registrousuarios.Componentes.pantallainicial.fontFamily
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserAuthService
 import com.crissnm.registrousuarios.R
 import com.google.firebase.auth.FirebaseAuth
@@ -71,10 +72,10 @@ fun barraDeInformacionSuperior(){
             Text(text = "Bienvenido a Nimbus Guard",
                 color = Color.Black,
                 fontWeight = FontWeight.Bold,
-                fontSize = 20.sp,
+                fontSize = 27.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
-                fontFamily = FontFamily.Monospace,
+                fontFamily = fontFamily,
                 fontStyle = FontStyle.Italic
             )
         },

@@ -9,17 +9,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.googlefonts.Font
+import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.crissnm.registrousuarios.Componentes.pantallainicial.ActionButtons
 import com.crissnm.registrousuarios.Componentes.pantallainicial.InstruccionesUso
 import com.crissnm.registrousuarios.Componentes.pantallainicial.PhotoCarousel
 import com.crissnm.registrousuarios.Componentes.pantallainicial.TextoBienvenida
+import com.crissnm.registrousuarios.R
 
 @Composable
 fun PantallaConInfoApp(navController: NavController) {
     contenidoPantallaConInformacionDeLaApp(navController)
 }
+
 
 @Composable
 fun contenidoPantallaConInformacionDeLaApp(navController: NavController) {

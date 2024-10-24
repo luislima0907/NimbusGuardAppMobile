@@ -23,11 +23,30 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.googlefonts.Font
+import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.crissnm.registrousuarios.R
+
+
+val provider = GoogleFont.Provider(
+    providerAuthority = "com.google.android.gms.fonts",
+    providerPackage = "com.google.android.gms",
+    certificates = R.array.com_google_android_gms_fonts_certs
+)
+
+val fontName = GoogleFont("Spicy Rice")
+val fontName2 = GoogleFont("Nerko One")
+
+val fontFamily = FontFamily(
+    Font(googleFont = fontName, fontProvider = provider),
+)
+val fontFamily2 = FontFamily(
+    Font(googleFont = fontName2, fontProvider = provider)
+)
 
 @Composable
 fun TextoBienvenida() {
@@ -37,9 +56,9 @@ fun TextoBienvenida() {
         textAlign = TextAlign.Center,
         modifier = Modifier.padding(bottom = 8.dp),
         color = Color.Black,
-        fontSize = 23.sp,
+        fontSize = 27.sp,
         fontWeight = FontWeight.Bold,
-        fontFamily = FontFamily.Serif
+        fontFamily = fontFamily
 
     )
 }
@@ -55,8 +74,8 @@ fun InstruccionesUso() {
         textAlign = TextAlign.Left,
         modifier = Modifier.padding(bottom = 8.dp),
         color = Color.Black,
-        fontSize = 12.sp,
-        fontFamily = FontFamily.Serif
+        fontSize = 16.sp,
+        fontFamily = fontFamily2
     )
 }
 
@@ -66,7 +85,8 @@ fun PhotoCarousel() {
         painterResource(id = R.drawable.app0),
         painterResource(id = R.drawable.app1),
         painterResource(id = R.drawable.app2),
-        painterResource(id = R.drawable.app3)
+        painterResource(id = R.drawable.app3),
+        painterResource(id = R.drawable.app4),
     )
 
     LazyRow(
@@ -110,7 +130,7 @@ fun ActionButtons(navController: NavController) {
             Text(
                 text = "Iniciar Sesión",
                 fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.Serif,
+                fontFamily = fontFamily,
                 fontSize = 13.sp
             )
         }
@@ -128,7 +148,7 @@ fun ActionButtons(navController: NavController) {
             Text(
                 text = "Registrarse",
                 fontWeight = FontWeight.Bold,
-                fontFamily = FontFamily.Serif,
+                fontFamily = fontFamily,
                 fontSize = 13.sp
             )
         }

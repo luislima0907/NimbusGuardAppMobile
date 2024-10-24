@@ -24,6 +24,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.googlefonts.Font
+import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.DialogProperties
@@ -31,9 +33,11 @@ import androidx.navigation.NavController
 import com.crissnm.registrousuarios.Componentes.Login.ContrasenaField
 import com.crissnm.registrousuarios.Componentes.Login.CorreoField
 import com.crissnm.registrousuarios.Componentes.Login.ImagenLogin
+import com.crissnm.registrousuarios.Componentes.pantallainicial.fontFamily
 import com.crissnm.registrousuarios.ManejoDeUsuarios.User
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserAuthService
 import com.crissnm.registrousuarios.ManejoDeUsuarios.Validaciones
+import com.crissnm.registrousuarios.R
 
 @Composable
 fun PantallaDeLogin(navController: NavController, users: List<User>) {
@@ -93,9 +97,9 @@ fun LoginForm(navController: NavController, users: List<User>) {
         Text(
             text = "Iniciar Sesión",
             fontWeight = FontWeight.Bold,
-            fontSize = 27.sp,
+            fontSize = 30.sp,
             color = Color.Black,
-            fontFamily = FontFamily.Serif
+            fontFamily = fontFamily
         )
 
         Spacer(modifier = Modifier.height(2.dp))
@@ -144,7 +148,7 @@ fun LoginForm(navController: NavController, users: List<User>) {
                 text = "Iniciar Sesión",
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
-                fontFamily = FontFamily.Serif
+                fontFamily = fontFamily
             )
         }
     }

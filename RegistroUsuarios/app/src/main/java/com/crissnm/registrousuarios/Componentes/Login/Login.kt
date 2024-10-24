@@ -20,7 +20,6 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.crissnm.registrousuarios.R
@@ -44,7 +43,7 @@ fun ImagenLogin(){
     ) {
         Image(
             painter = painterResource(id = R.drawable.login),
-            contentDescription = "Registrate",
+            contentDescription = "login",
             modifier = Modifier
                 .size(50.dp)
                 .offset(y = (-10).dp)
@@ -82,7 +81,8 @@ fun ContrasenaField(contrasena: MutableState<String>) {
 fun ButtonLogin(){
     Button(
         onClick = { /* Acción del botón de inicio de sesión */ },
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier.fillMaxWidth(
+        )
     ) {
         Text(
             text = "Iniciar Sesión",
