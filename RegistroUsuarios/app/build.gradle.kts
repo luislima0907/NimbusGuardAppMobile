@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.play.services)
     implementation(libs.androidx.runtime.livedata)
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.4")
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

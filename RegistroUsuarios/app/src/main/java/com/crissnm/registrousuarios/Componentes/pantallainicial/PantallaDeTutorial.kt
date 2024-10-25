@@ -3,10 +3,12 @@ package com.crissnm.registrousuarios.Componentes.pantallainicial
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -132,6 +134,12 @@ fun ActionButtons(navController: NavController) {
                 fontFamily = fontFamily,
                 fontSize = 18.sp
             )
+            Spacer(modifier = Modifier.width(8.dp))
+            Image(
+                painter = painterResource(id = R.drawable.inicio),
+                contentDescription = "Inicio de sesión",
+                modifier = Modifier.size(24.dp)
+            )
         }
         Button(
             onClick = {
@@ -149,6 +157,11 @@ fun ActionButtons(navController: NavController) {
                 //fontWeight = FontWeight.Bold,
                 fontFamily = fontFamily,
                 fontSize = 18.sp
+            )
+            Image(
+                painter = painterResource(id = R.drawable.register),
+                contentDescription = "Registro",
+                modifier = Modifier.size(24.dp)
             )
         }
     }
