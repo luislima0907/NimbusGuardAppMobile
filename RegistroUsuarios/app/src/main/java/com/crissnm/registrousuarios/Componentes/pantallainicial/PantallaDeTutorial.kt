@@ -153,7 +153,7 @@ fun ActionButtons(navController: NavController) {
 
         ) {
             Text(
-                text = "Registrarse",
+                text = "Registrarse  ",
                 //fontWeight = FontWeight.Bold,
                 fontFamily = fontFamily,
                 fontSize = 18.sp

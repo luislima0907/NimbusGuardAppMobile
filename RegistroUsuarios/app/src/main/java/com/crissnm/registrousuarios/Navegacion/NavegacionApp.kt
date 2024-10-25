@@ -17,6 +17,7 @@ import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeNotificacion
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDePerfil
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaDeRegistro
 import com.crissnm.registrousuarios.PantallasDeLaApp.PantallaPrincipal
+import com.crissnm.registrousuarios.PantallasDeLaApp.PasswordEmail
 
 @Composable
 fun navegacionDeLaApp() {
@@ -66,6 +67,9 @@ fun navegacionDeLaApp() {
         }
         composable(route = ManejoDeLasPantallasDeLaApp.PantallaConInfoApp.ruta){
             PantallaConInfoApp(navController)
+        }
+        composable(route = ManejoDeLasPantallasDeLaApp.PantallaDePasswordEmail.ruta){
+            PasswordEmail(navController = navController, uid = "", authService = authService)
         }
     }
 }
