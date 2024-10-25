@@ -5,7 +5,6 @@ import com.google.firebase.firestore.FirebaseFirestore
 class FireStoreServiceAlert {
     fun saveAlertInFireStore(alert: Alert, onSuccess: (String) -> Unit, onFailure: () -> Unit) {
         val db = FirebaseFirestore.getInstance()
-
         // Agregar la alerta a Firestore y obtener su ID
         db.collection("alerts")
             .add(alert) // Aquí se guarda la alerta

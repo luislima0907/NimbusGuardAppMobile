@@ -26,18 +26,5 @@ class UserProfileViewModel(
             }
         }
     }
-
-    // Función para actualizar los datos del usuario
-//    fun updateUser(user: User, onSuccess: () -> Unit, onFailure: () -> Unit) {
-//        firestoreService.updateUserInFirestore(user) { success ->
-//            if (success) {
-//                onSuccess()
-//            } else {
-//                onFailure()
-//            }
-//        }
-//    }
-
-    // Otras funciones relacionadas con el perfil (validaciones, etc.)
 }
 

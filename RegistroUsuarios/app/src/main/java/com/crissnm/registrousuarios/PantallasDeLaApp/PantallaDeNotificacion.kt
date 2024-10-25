@@ -1,30 +1,37 @@
 package com.crissnm.registrousuarios.PantallasDeLaApp
 
-import android.annotation.SuppressLint
+import NotificacionViewModelFactory
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.crissnm.registrousuarios.Componentes.Notificacion.Notificacion
 import com.crissnm.registrousuarios.Componentes.Notificacion.NotificacionRepository
+import com.crissnm.registrousuarios.Componentes.Notificacion.NotificacionViewModel
 import com.crissnm.registrousuarios.Componentes.pantallainicial.fontFamily
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun PantallaDeNotificacion(
     navController: NavController
@@ -32,6 +39,8 @@ fun PantallaDeNotificacion(
     val notificaciones = NotificacionRepository.notificaciones
     contenidoPantallaDeNotificacion(navController, notificaciones)
 }
+
+
 
 @Composable
 fun contenidoPantallaDeNotificacion(
@@ -42,9 +51,9 @@ fun contenidoPantallaDeNotificacion(
         Column(
             modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Top // Cambia esto a Top
+            verticalArrangement = Arrangement.Top
         ) {
-            Spacer(modifier = Modifier.height(130.dp)) // Espaciador para empujar el contenido hacia abajo
+            Spacer(modifier = Modifier.height(130.dp))
             Text(
                 text = "Notificaciones del Estado de tus Alertas",
                 style = MaterialTheme.typography.titleLarge,
@@ -54,8 +63,8 @@ fun contenidoPantallaDeNotificacion(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(16.dp), // Padding alrededor del LazyColumn
-                verticalArrangement = Arrangement.spacedBy(8.dp) // Espaciado entre tarjetas
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(notificaciones) { notificacion ->
                     NotificacionItem(notificacion)
@@ -64,6 +73,7 @@ fun contenidoPantallaDeNotificacion(
         }
     }
 }
+
 
 @Composable
 fun NotificacionItem(notificacion: Notificacion) {

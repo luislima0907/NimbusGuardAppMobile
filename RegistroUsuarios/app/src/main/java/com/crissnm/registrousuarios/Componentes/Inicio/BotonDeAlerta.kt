@@ -1,10 +1,13 @@
 package com.crissnm.registrousuarios.Componentes.Inicio
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -20,6 +23,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -29,12 +33,15 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.crissnm.registrousuarios.Componentes.Notificacion.AlertService
+import com.crissnm.registrousuarios.Componentes.Notificacion.NotificacionViewModel
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserFireStoreService
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.firebase.firestore.FirebaseFirestore
 import java.time.LocalDateTime
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -50,10 +57,20 @@ fun BotonDeAlerta(
     permissionsState: MultiplePermissionsState,
     context: Context,
     isButtonEnabled: Boolean, // Estado habilitado
-    onButtonStatusChange: (Boolean) -> Unit // Callback para cambiar el estado
+    onButtonStatusChange: (Boolean) -> Unit, // Callback para cambiar el estado
+    viewModel: BotonDeAlertaViewModel = viewModel(factory = BotonDeAlertaViewModelFactory(LocalContext.current))
 ) {
     // Estado para el botón
-    var isButtonEnabled by rememberSaveable { mutableStateOf(isButtonEnabled) }
+    //var isButtonEnabled by rememberSaveable { mutableStateOf(isButtonEnabled) }
+
+    val enabled = permissionsState.allPermissionsGranted && isButtonEnabled
+
+    //val isButtonEnabled by viewModel.isButtonEnabled.observeAsState(true) // Estado inicial desde el ViewModel
+
+    var isButtonEnabled by rememberSaveable {
+        mutableStateOf(getButtonState(context, buttonId)) // Recuperar el estado del botón
+    }
+
     // Estado para mostrar los diálogos
     var showAlertDialog by rememberSaveable { mutableStateOf(false) }
     var showConfirmationDialog by rememberSaveable { mutableStateOf(false) }
@@ -62,6 +79,18 @@ fun BotonDeAlerta(
     var latitud by rememberSaveable { mutableStateOf(0.0) }
     var longitud by rememberSaveable { mutableStateOf(0.0) }
     var buttonTitle by rememberSaveable { mutableStateOf("") }
+
+
+    // Define un launcher para solicitar permisos
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        permissions.entries.forEach {
+            if (!it.value) {
+                Toast.makeText(context, "Permiso de ubicación no concedido.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
 
     // Botón de alerta
     Button(
@@ -74,9 +103,16 @@ fun BotonDeAlerta(
                         buttonTitle = buttonConfig.title
                         //Toast.makeText(context, "Latitud: $lat, Longitud: $lon", Toast.LENGTH_SHORT).show()
                         showAlertDialog = true
+                        onButtonStatusChange(false) // Desactivar el botón
+                        viewModel.disableButton(buttonId) // Deshabilitar el botón
                     }
                 } else {
-                    Toast.makeText(context, "Permiso de ubicación no concedido.", Toast.LENGTH_SHORT).show()
+                    // Solicitar los permisos necesarios si no han sido concedidos
+                    requestPermissionLauncher.launch(arrayOf(
+                        Manifest.permission.ACCESS_FINE_LOCATION,
+                        Manifest.permission.ACCESS_COARSE_LOCATION
+                    ))
+                    Toast.makeText(context, "Conceda el permiso de ubicacion.", Toast.LENGTH_SHORT).show()
                 }
             } else {
                 Toast.makeText(context, "Este botón está deshabilitado temporalmente.", Toast.LENGTH_SHORT).show()
@@ -114,28 +150,36 @@ fun BotonDeAlerta(
             uid = uid,
             typeAlert = buttonTitle,
             idButton = buttonId,
-            idAlert = "", // No es necesario ya que lo generamos dinámicamente
+            idAlert = idAlert,
             onSend = { alertId ->
                 showAlertDialog = false
                 showConfirmationDialog = true
-                Toast.makeText(context, "Alerta enviada con ID: $alertId", Toast.LENGTH_SHORT).show() // Mostrar el ID de la alerta
-
+                //Toast.makeText(context, "Alerta enviada con ID: $alertId", Toast.LENGTH_SHORT).show() // Mostrar el ID de la alerta
                 // Desactivar el botón después de enviar la alerta
                 isButtonEnabled = false
-                onButtonStatusChange(isButtonEnabled) // Llamar el callback para desactivar
+                onButtonStatusChange(false) // Desactivar el botón después de enviar la alerta
             },
             onDismiss = { showAlertDialog = false }
         )
     }
 
-    // Lógica de retardo de 1 minuto
     LaunchedEffect(isButtonEnabled) {
         if (!isButtonEnabled) {
-            kotlinx.coroutines.delay(60000) // 60 segundos
-            isButtonEnabled = true // Habilitar de nuevo después de 1 minuto
-            onButtonStatusChange(isButtonEnabled)
+            kotlinx.coroutines.delay(30000) // 30 segundos
+            onButtonStatusChange(true)
+            isButtonEnabled = true
+            saveButtonState(context, buttonId, isButtonEnabled) // Guardar el nuevo estado
         }
     }
+
+    // Lógica de retardo de 1 minuto
+//    LaunchedEffect(isButtonEnabled) {
+//        if (!isButtonEnabled) {
+//            kotlinx.coroutines.delay(60000) // 60 segundos
+//            isButtonEnabled = true // Habilitar de nuevo después de 1 minuto
+//            onButtonStatusChange(isButtonEnabled)
+//        }
+//    }
 
     // Diálogo de confirmación
     if (showConfirmationDialog) {
@@ -153,12 +197,12 @@ fun BotonDeAlerta(
 @Composable
 fun showAlertInputDialog(
     state: String,
+    idAlert: String,
     latitud: Double,
     longitud: Double,
     uid: String,
     typeAlert: String,
     idButton: String,
-    idAlert: String,
     onSend: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -185,14 +229,15 @@ fun showAlertInputDialog(
         confirmButton = {
             Button(onClick = {
                 handleSendAlert(
-                    context, // Pasa el contexto aquí
-                    state,
-                    latitud,
-                    longitud,
-                    uid,
-                    alertDetails,
-                    typeAlert,
-                    idButton
+                    context =  context, // Pasa el contexto aquí
+                    idAlert =  idAlert,
+                    state =  state,
+                    latitud =  latitud,
+                    longitud =  longitud,
+                    uid =  uid,
+                    alertDetails =  alertDetails,
+                    typeAlert =  typeAlert,
+                    idButton =  idButton
                 ) { alertId ->
                     onSend(alertId)
                 }
@@ -208,9 +253,11 @@ fun showAlertInputDialog(
     )
 }
 
+
 @RequiresApi(Build.VERSION_CODES.O)
 fun handleSendAlert(
     context: Context, // Añadir el contexto aquí
+    idAlert: String,
     state: String,
     latitud: Double,
     longitud: Double,
@@ -222,7 +269,9 @@ fun handleSendAlert(
 ) {
     val fireStoreServiceAlert = FireStoreServiceAlert()
     val userFireStoreService = UserFireStoreService()
-    val alert = Alert().apply {
+    var alert = Alert()
+    alert.apply {
+        this.idAlert = ""
         this.state = state
         this.latitude = latitud
         this.longitude = longitud
@@ -237,7 +286,13 @@ fun handleSendAlert(
         if (user != null) {
             alert.user = user
             fireStoreServiceAlert.saveAlertInFireStore(alert, onSuccess = { alertId ->
-
+                alert.apply {
+                    this.idAlert = alertId
+                }
+                val db = FirebaseFirestore.getInstance()
+                db.collection("alerts")
+                    .document(alertId)  // Seleccionamos el documento por ID
+                    .set(alert)  // Actualizamos con los nuevos datos
                 // Crear instancia de AlertService y enviar notificación
                 val alertService = AlertService(context)
                 alertService.createNotification(
@@ -282,4 +337,17 @@ private fun getCurrentLocation(fusedLocationClient: FusedLocationProviderClient,
             onLocationResult(0.0, 0.0)
         }
     }
+}
+
+fun saveButtonState(context: Context, buttonId: String, isEnabled: Boolean) {
+    val sharedPreferences = context.getSharedPreferences("ButtonPrefs", Context.MODE_PRIVATE)
+    with(sharedPreferences.edit()) {
+        putBoolean(buttonId, isEnabled)
+        apply() // Guarda el estado
+    }
+}
+
+fun getButtonState(context: Context, buttonId: String): Boolean {
+    val sharedPreferences = context.getSharedPreferences("ButtonPrefs", Context.MODE_PRIVATE)
+    return sharedPreferences.getBoolean(buttonId, true) // True es el valor por defecto
 }

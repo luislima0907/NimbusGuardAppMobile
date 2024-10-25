@@ -12,17 +12,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.googlefonts.Font
-import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.crissnm.registrousuarios.Componentes.pantallainicial.fontFamily
-import com.crissnm.registrousuarios.ManejoDeUsuarios.User
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserAuthService
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserFireStoreService
 import com.crissnm.registrousuarios.ManejoDeUsuarios.Validaciones
@@ -30,7 +26,6 @@ import com.crissnm.registrousuarios.DepYmuni.ValidarCUI // Asegúrate de importa
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserProfileViewModel
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserProfileViewModelFactory
 import com.crissnm.registrousuarios.Navegacion.ManejoDeLasPantallasDeLaApp
-import com.crissnm.registrousuarios.R
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
