@@ -103,8 +103,8 @@ fun BotonDeAlerta(
                         buttonTitle = buttonConfig.title
                         //Toast.makeText(context, "Latitud: $lat, Longitud: $lon", Toast.LENGTH_SHORT).show()
                         showAlertDialog = true
-                        onButtonStatusChange(false) // Desactivar el botón
-                        viewModel.disableButton(buttonId) // Deshabilitar el botón
+                        //onButtonStatusChange(false) // Desactivar el botón
+                        //viewModel.disableButton(buttonId) // Deshabilitar el botón
                     }
                 } else {
                     // Solicitar los permisos necesarios si no han sido concedidos
@@ -319,7 +319,7 @@ fun showConfirmationDialog(onAccept: () -> Unit) {
         onDismissRequest = { },
         title = { Text(text = "Información Enviada") },
         text = { Text("Información enviada con éxito, revisa el apartado de notificaciones para tener información sobre el estado de tu alerta." +
-                "\nNOTA: No podrás volver a enviar esta misma alerta hasta que pase al menos un minuto, esperamos tu comprension.") },
+                "\nNOTA: No podrás volver a enviar esta misma alerta hasta que pase al menos 30 segundos, esperamos tu comprension.") },
         confirmButton = {
             Button(onClick = { onAccept() }) {
                 Text("Aceptar")

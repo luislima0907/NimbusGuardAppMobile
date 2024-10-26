@@ -160,9 +160,6 @@ fun contenidoPantallaDeInicio(
             var isButtonEnabled by rememberSaveable { mutableStateOf(true) }
             val savedState = getButtonState(context, buttonId) // Recupera el estado guardado
 
-
-            //val buttonStates by viewModel.buttonStates.observeAsState(mutableMapOf())
-
             BotonDeAlerta(
                 uid = uid.toString(),
                 idAlert = alertId.toString(),

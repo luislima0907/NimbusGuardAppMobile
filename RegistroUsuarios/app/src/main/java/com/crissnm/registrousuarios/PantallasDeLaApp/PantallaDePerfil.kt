@@ -121,7 +121,7 @@ fun contenidoPantallaDePerfil(
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(30.dp))
+        Spacer(modifier = Modifier.height(100.dp))
 
         Text("Perfil", fontSize = 28.sp, modifier = Modifier.padding(bottom = 12.dp),
             //fontWeight = FontWeight.Bold,
