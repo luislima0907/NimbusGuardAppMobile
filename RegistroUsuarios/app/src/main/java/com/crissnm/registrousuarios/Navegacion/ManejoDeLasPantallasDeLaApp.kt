@@ -9,4 +9,6 @@ sealed class ManejoDeLasPantallasDeLaApp(val ruta: String) {
     object PantallaDeNotificacion : ManejoDeLasPantallasDeLaApp("pantalla_notificaciones")
     object PantallaPrincipal : ManejoDeLasPantallasDeLaApp("pantalla_principal")
     object PantallaConInfoApp: ManejoDeLasPantallasDeLaApp("pantalla_con_info_app")
+    object PantallaDePasswordEmail: ManejoDeLasPantallasDeLaApp("pantalla_password_email")
+
 }

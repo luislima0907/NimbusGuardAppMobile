@@ -99,7 +99,6 @@ fun contenidoPantallaDePerfil(
     var departamento by remember { mutableStateOf("") }
     var municipio by remember { mutableStateOf("") }
 
-    // Actualizar los campos cuando se carga el usuario
     LaunchedEffect(user) {
         user?.let {
             nombres = it.name
@@ -117,7 +116,7 @@ fun contenidoPantallaDePerfil(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())  // Habilitar scroll
-            .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 40.dp),
+            .padding(start = 20.dp, end = 20.dp, top = 100.dp, bottom = 10.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -149,21 +148,6 @@ fun contenidoPantallaDePerfil(
             label = { Text("Teléfono") },
             readOnly = !isEditing,
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Phone),
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = correo,
-            onValueChange = { correo = it },
-            label = { Text("Correo") },
-            readOnly = true, // El correo no es editable
-            keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Email),
-            modifier = Modifier.fillMaxWidth()
-        )
-        OutlinedTextField(
-            value = contrasena,
-            onValueChange = { contrasena = it },
-            label = { Text("Contraseña") },
-            readOnly = true, // La contraseña no es editable desde esta pantalla
             modifier = Modifier.fillMaxWidth()
         )
         OutlinedTextField(
@@ -275,25 +259,45 @@ fun contenidoPantallaDePerfil(
                 }
             }
 
-            // Botón para eliminar cuenta
-            Button(
-                onClick = {
-                    showDeleteConfirmation = true
-                    isDeleteButtonEnabled = false
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text(
-                    text = "Eliminar Cuenta",
-                    color = Color.White,
-                    fontFamily = fontFamily
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-                Image(
-                    painter = painterResource(id = R.drawable.eliminar),
-                    contentDescription = "Eliminar cuenta",
-                    modifier = Modifier.size(24.dp)
-                )
+                // Botón para cambiar contraseña
+                Button(
+                    onClick = {
+                        // Acción para cambiar contraseña
+                        navController.navigate("pantalla_password_email")
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+                ) {
+                    Text(
+                        text = "Cambiar Contraseña",
+                        color = Color.White,
+                        fontFamily = fontFamily
+                    )
+                }
+
+                // Botón para eliminar cuenta
+                Button(
+                    onClick = {
+                        showDeleteConfirmation = true
+                        isDeleteButtonEnabled = false
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
+                ) {
+                    Text(
+                        text = "Eliminar Cuenta",
+                        color = Color.White,
+                        fontFamily = fontFamily
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Image(
+                        painter = painterResource(id = R.drawable.eliminar),
+                        contentDescription = "Eliminar cuenta",
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
             }
 
             // Diálogo de confirmación de eliminación de cuenta
