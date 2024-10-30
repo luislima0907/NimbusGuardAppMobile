@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,15 +32,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.crissnm.registrousuarios.Componentes.Inicio.BotonDeAlertaViewModel
+import com.crissnm.registrousuarios.Componentes.Inicio.BotonDeAlertaViewModelFactory
 import com.crissnm.registrousuarios.Componentes.Inicio.ItemDeLaBarra
-import com.crissnm.registrousuarios.Componentes.Notificacion.Notificacion
 import com.crissnm.registrousuarios.Componentes.Notificacion.NotificacionRepository
 import com.crissnm.registrousuarios.Componentes.pantallainicial.fontFamily
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserAuthService
@@ -52,16 +53,25 @@ fun PantallaPrincipal(
     buttonStates: MutableMap<String, Boolean>,
     onButtonStatusChange: (String, Boolean) -> Unit,
 ) {
-    val notificaciones = NotificacionRepository.notificaciones // Obtener notificaciones del repositorio
-    val contadorDeNotificaciones by remember { NotificacionRepository.contadorDeNotificaciones }
+    val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+
+    // Obtener el contador de notificaciones como un estado observable
+    val contadorDeNotificaciones by remember {
+        derivedStateOf { NotificacionRepository.obtenerNotificaciones(uid).size }
+    }
+
+    val context = LocalContext.current
+    val viewModel: BotonDeAlertaViewModel = viewModel(factory = BotonDeAlertaViewModelFactory(context))
+
     barraDeNavegacionInferior(
         navController = navController,
         buttonStates = buttonStates,
         onButtonStatusChange = onButtonStatusChange,
-        notificaciones = notificaciones, // Pasar aquí la lista de notificaciones
-        contadorDeNotificaciones = contadorDeNotificaciones // Pasar aquí el contador de notificaciones
+        contadorDeNotificaciones = contadorDeNotificaciones
     )
 }
+
+
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -98,13 +108,12 @@ fun barraDeNavegacionInferior(
     navController: NavController,
     buttonStates: MutableMap<String, Boolean>,
     onButtonStatusChange: (String, Boolean) -> Unit,
-    notificaciones: List<Notificacion>,
-    contadorDeNotificaciones: Int // Agregar parámetro de contador
+    contadorDeNotificaciones: Int
 ) {
     val listaDeItemsDeLaBarraDeNavegacion = listOf(
         ItemDeLaBarra("Inicio", Icons.Default.Home, 0),
         ItemDeLaBarra("Perfil", Icons.Default.Person, 0),
-        ItemDeLaBarra("Notificaciones", Icons.Default.Notifications, contadorDeNotificaciones) // Usar contador
+        ItemDeLaBarra("Notificaciones", Icons.Default.Notifications, contadorDeNotificaciones)
     )
 
     var selectedIndex by rememberSaveable { mutableStateOf(0) }
@@ -144,12 +153,12 @@ fun barraDeNavegacionInferior(
             selectedIndex = selectedIndex,
             navController = navController,
             buttonStates = buttonStates,
-            onButtonStatusChange = onButtonStatusChange,
-            notificaciones = NotificacionRepository.notificaciones
+            onButtonStatusChange = onButtonStatusChange
         )
         barraDeInformacionSuperior()
     }
 }
+
 
 @Composable
 fun contenidoDeLaBarraDeNavegacionInferior(
@@ -158,7 +167,7 @@ fun contenidoDeLaBarraDeNavegacionInferior(
     navController: NavController,
     buttonStates: MutableMap<String, Boolean>,
     onButtonStatusChange: (String, Boolean) -> Unit,
-    notificaciones: List<Notificacion> // Agregar parámetro de notificaciones
+    //notificaciones: List<Notificacion> // Agregar parámetro de notificaciones
 ) {
     when (selectedIndex) {
         0 -> PantallaDeInicio(

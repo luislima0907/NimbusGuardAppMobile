@@ -13,3 +13,4 @@ class BotonDeAlertaViewModelFactory(private val context: Context) : ViewModelPro
         throw IllegalArgumentException("Unknown ViewModel class")
     }
 }
+

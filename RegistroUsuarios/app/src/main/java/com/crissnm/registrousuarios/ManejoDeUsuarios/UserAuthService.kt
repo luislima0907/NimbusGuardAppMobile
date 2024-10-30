@@ -2,6 +2,7 @@ package com.crissnm.registrousuarios.ManejoDeUsuarios
 
 import android.content.Context
 import android.util.Log
+import com.crissnm.registrousuarios.Componentes.Notificacion.NotificacionRepository
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -59,6 +60,8 @@ class UserAuthService {
             }
     }
     fun logoutUser(onComplete: () -> Unit) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid?: ""
+        //NotificacionRepository.limpiarNotificaciones(userId)
         FirebaseAuth.getInstance().signOut()
         onComplete() // Asegúrate de que esto se llame después de cerrar sesión
     }

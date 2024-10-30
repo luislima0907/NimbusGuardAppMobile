@@ -154,11 +154,12 @@ fun contenidoPantallaDeInicio(
             color = Color.Black,
             fontFamily = fontFamily,
             fontSize = 20.sp
-            )
+        )
         buttonConfigs.forEachIndexed { index, buttonConfig ->
             val buttonId = "alertButton_$index" // ID único para cada botón
-            var isButtonEnabled by rememberSaveable { mutableStateOf(true) }
-            val savedState = getButtonState(context, buttonId) // Recupera el estado guardado
+            val isButtonEnabled = buttonStates[buttonId] ?: true // Obtener el estado del botón
+            //val savedState = getButtonState(context, buttonId) // Recupera el estado guardado
+            val _buttonStates by viewModel.buttonStates.observeAsState(initial = emptyMap())
 
             BotonDeAlerta(
                 uid = uid.toString(),
@@ -169,10 +170,13 @@ fun contenidoPantallaDeInicio(
                 fusedLocationClient = fusedLocationClient,
                 permissionsState = permissionsState,
                 context = context,
-                isButtonEnabled = savedState, // Verificar el estado del botón
+                isButtonEnabled = isButtonEnabled, // Verificar el estado del botón
                 onButtonStatusChange = { isEnabled ->
+                    if (!isEnabled) {
+                        viewModel.disableButton(buttonId)
+                    }
                     //isButtonEnabled = isEnabled
-                    viewModel.disableButton(buttonId) // Actualizar el estado del botón en el ViewModel
+                    //viewModel.disableButton(buttonId) // Actualizar el estado del botón en el ViewModel
 
                     //buttonStates[buttonId] = isEnabled // Actualizar el estado del botón
                     //Log.d("ButtonState", "Button $buttonId isEnabled: $isEnabled") // Log del estado

@@ -1,7 +1,5 @@
 package com.crissnm.registrousuarios.PantallasDeLaApp
 
-import NotificacionViewModelFactory
-import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,27 +14,35 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.crissnm.registrousuarios.Componentes.Notificacion.AlertService
 import com.crissnm.registrousuarios.Componentes.Notificacion.Notificacion
 import com.crissnm.registrousuarios.Componentes.Notificacion.NotificacionRepository
-import com.crissnm.registrousuarios.Componentes.Notificacion.NotificacionViewModel
 import com.crissnm.registrousuarios.Componentes.pantallainicial.fontFamily
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun PantallaDeNotificacion(
     navController: NavController
 ) {
-    val notificaciones = NotificacionRepository.notificaciones
+    val context = LocalContext.current
+    val alertService = AlertService(context)
+
+    // Iniciar el listener para alertas en tiempo real
+    LaunchedEffect(Unit) {
+        alertService.listenChangesOnAlerts()
+    }
+    val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
+    val notificaciones = NotificacionRepository.obtenerNotificaciones(userId)
+    // Muestra el contador de notificaciones en la UI
+    //val contador = NotificacionRepository.obtenerContadorDeNotificaciones(userId)
+    //val _notificaciones = NotificacionRepository.notificaciones
     contenidoPantallaDeNotificacion(navController, notificaciones)
 }
 
@@ -45,7 +51,8 @@ fun PantallaDeNotificacion(
 @Composable
 fun contenidoPantallaDeNotificacion(
     navController: NavController,
-    notificaciones: List<Notificacion>
+    notificaciones: List<Notificacion>,
+    //contadorDeNotificaciones: Int
 ) {
     Box(modifier = Modifier.fillMaxWidth()) {
         Column(

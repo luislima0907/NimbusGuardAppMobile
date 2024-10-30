@@ -23,7 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -36,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.crissnm.registrousuarios.Componentes.Notificacion.AlertService
-import com.crissnm.registrousuarios.Componentes.Notificacion.NotificacionViewModel
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserFireStoreService
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
@@ -70,6 +68,11 @@ fun BotonDeAlerta(
     var isButtonEnabled by rememberSaveable {
         mutableStateOf(getButtonState(context, buttonId)) // Recuperar el estado del botón
     }
+
+//    var isButtonEnabled by rememberSaveable {
+//        mutableStateOf(getButtonState(context, uid, buttonId)) // Recuperar el estado del botón
+//    }
+
 
     // Estado para mostrar los diálogos
     var showAlertDialog by rememberSaveable { mutableStateOf(false) }
@@ -163,14 +166,21 @@ fun BotonDeAlerta(
         )
     }
 
+    LaunchedEffect(Unit) {
+        // Recupera el estado del botón desde SharedPreferences al inicio
+        isButtonEnabled = getButtonState(context, buttonId)
+    }
+
     LaunchedEffect(isButtonEnabled) {
         if (!isButtonEnabled) {
-            kotlinx.coroutines.delay(30000) // 30 segundos
-            onButtonStatusChange(true)
+            kotlinx.coroutines.delay(30000) // Espera 30 segundos
+            // Reactiva el botón y guarda el estado actualizado
             isButtonEnabled = true
-            saveButtonState(context, buttonId, isButtonEnabled) // Guardar el nuevo estado
+            onButtonStatusChange(true)
+            saveButtonState(context, buttonId, isButtonEnabled) // Guarda el nuevo estado
         }
     }
+
 
     // Lógica de retardo de 1 minuto
 //    LaunchedEffect(isButtonEnabled) {
@@ -346,6 +356,20 @@ fun saveButtonState(context: Context, buttonId: String, isEnabled: Boolean) {
         apply() // Guarda el estado
     }
 }
+
+//fun saveButtonState(context: Context, uid: String, buttonId: String, isEnabled: Boolean) {
+//    val sharedPreferences = context.getSharedPreferences("ButtonPrefs", Context.MODE_PRIVATE)
+//    with(sharedPreferences.edit()) {
+//        putBoolean("$uid-$buttonId", isEnabled) // Clave única por usuario y botón
+//        apply() // Guarda el estado
+//    }
+//}
+//
+//fun getButtonState(context: Context, uid: String, buttonId: String): Boolean {
+//    val sharedPreferences = context.getSharedPreferences("ButtonPrefs", Context.MODE_PRIVATE)
+//    return sharedPreferences.getBoolean("$uid-$buttonId", true) // True es el valor por defecto
+//}
+
 
 fun getButtonState(context: Context, buttonId: String): Boolean {
     val sharedPreferences = context.getSharedPreferences("ButtonPrefs", Context.MODE_PRIVATE)
