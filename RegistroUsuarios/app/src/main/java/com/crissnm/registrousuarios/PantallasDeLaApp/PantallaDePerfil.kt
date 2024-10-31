@@ -116,7 +116,7 @@ fun contenidoPantallaDePerfil(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())  // Habilitar scroll
-            .padding(start = 20.dp, end = 20.dp, top = 100.dp, bottom = 10.dp),
+            .padding(start = 20.dp, end = 20.dp, top = 40.dp, bottom = 30.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -259,24 +259,6 @@ fun contenidoPantallaDePerfil(
                 }
             }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly
-            ) {
-                // Botón para cambiar contraseña
-                Button(
-                    onClick = {
-                        // Acción para cambiar contraseña
-                        navController.navigate("pantalla_password_email")
-                    },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
-                ) {
-                    Text(
-                        text = "Cambiar Contraseña",
-                        color = Color.White,
-                        fontFamily = fontFamily
-                    )
-                }
 
                 // Botón para eliminar cuenta
                 Button(
@@ -298,7 +280,6 @@ fun contenidoPantallaDePerfil(
                         modifier = Modifier.size(24.dp)
                     )
                 }
-            }
 
             // Diálogo de confirmación de eliminación de cuenta
             if (showDeleteConfirmation) {

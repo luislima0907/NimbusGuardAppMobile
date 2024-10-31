@@ -228,7 +228,7 @@ fun showAlertInputDialog(
 ) {
     var alertDetails by remember { mutableStateOf("") }
 
-    val context = LocalContext.current // Obtener el contexto
+    val context = LocalContext.current
 
     AlertDialog(
         onDismissRequest = { onDismiss() },
