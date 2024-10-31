@@ -1,98 +1,70 @@
 package com.crissnm.registrousuarios.Componentes.Inicio
 
 import android.content.Context
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
+import android.content.SharedPreferences
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import kotlinx.coroutines.CoroutineScope
+import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-class BotonDeAlertaViewModel(private val context: Context) : ViewModel() {
-    private val buttonRepository = ButtonRepository(context)
+class BotonDeAlertaViewModel(context: Context) : ViewModel() {
 
-    val buttonStates: LiveData<MutableMap<String, Boolean>> get() = buttonRepository.buttonStates
+    private val preferences: SharedPreferences =
+        context.getSharedPreferences("button_states", Context.MODE_PRIVATE)
 
-    fun disableButton(buttonId: String) {
-        buttonRepository.disableButton(buttonId)
+    private val _buttonStates = MutableStateFlow<Map<String, Boolean>>(loadButtonStates())
+    val buttonStates = _buttonStates.asStateFlow()
+
+    private val activeTimers = mutableMapOf<String, Boolean>()
+    var timeRemaining by mutableStateOf(30)
+
+
+    fun disableButton(buttonId: String, duration: Long = 30000L) {
+        if (activeTimers[buttonId] == true) return
+
+        viewModelScope.launch {
+            activeTimers[buttonId] = true
+            updateButtonState(buttonId, false)
+
+            delay(duration)
+
+            updateButtonState(buttonId, true)
+            activeTimers.remove(buttonId)
+        }
     }
 
-    fun enableButton(buttonId: String) {
-        buttonRepository.enableButton(buttonId)
+
+    public suspend fun updateButtonState(buttonId: String, isActive: Boolean) {
+        withContext(Dispatchers.Main) {
+            val currentState = _buttonStates.value
+            val newState = currentState.toMutableMap().apply { this[buttonId] = isActive }
+            _buttonStates.emit(newState)
+            saveButtonStates(newState)
+        }
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        buttonRepository.clear() // Limpiar cualquier coroutine activa
+
+    private fun loadButtonStates(): Map<String, Boolean> {
+        val buttonStates = mutableMapOf<String, Boolean>()
+        val buttonIds = listOf("alertButton_0", "alertButton_1", "alertButton_2", "alertButton_3", "alertButton_4")
+        for (buttonId in buttonIds) {
+            buttonStates[buttonId] = preferences.getBoolean(buttonId, true)
+        }
+        return buttonStates
+    }
+
+    private fun saveButtonStates(states: Map<String, Boolean>) {
+        val editor = preferences.edit()
+        states.forEach { (key, value) ->
+            editor.putBoolean(key, value)
+        }
+        editor.apply()
     }
 }
-
-
-
-//class BotonDeAlertaViewModel(private val context: Context) : ViewModel() {
-//    // Variable para el estado de cada botón
-//    private val _buttonStates = MutableLiveData<MutableMap<String, Boolean>>()
-//    val buttonStates: LiveData<MutableMap<String, Boolean>> get() = _buttonStates
-//
-//    // Job para controlar el coroutine
-//    private var job: Job? = null
-//
-//    init {
-//        // Inicializar el estado de los botones desde SharedPreferences
-//        _buttonStates.value = loadButtonStates(context)
-//    }
-//
-//    // Función para deshabilitar un botón específico
-//    fun disableButton(buttonId: String) {
-//        updateButtonState(buttonId, false)
-//        startButtonReactivationTimer(buttonId, 30_000) // 30 segundos de desactivación
-//    }
-//
-//    // Función para habilitar un botón específico
-//    fun enableButton(buttonId: String) {
-//        updateButtonState(buttonId, true)
-//    }
-//
-//    // Función para actualizar el estado de un botón
-//    private fun updateButtonState(buttonId: String, isEnabled: Boolean) {
-//        val currentStates = _buttonStates.value ?: mutableMapOf()
-//        currentStates[buttonId] = isEnabled
-//        _buttonStates.value = currentStates
-//        saveButtonState(context, buttonId, isEnabled)
-//    }
-//
-//    // Función para iniciar el temporizador
-//    private fun startButtonReactivationTimer(buttonId: String, delayMillis: Long) {
-//        job?.cancel() // Cancelar el trabajo anterior si existe
-//        job = CoroutineScope(Dispatchers.Main).launch {
-//            delay(delayMillis) // Esperar el tiempo especificado
-//            enableButton(buttonId) // Habilitar el botón
-//        }
-//    }
-//
-//    // Funciones para manejar SharedPreferences
-//    private fun saveButtonState(context: Context, buttonId: String, isEnabled: Boolean) {
-//        val sharedPreferences = context.getSharedPreferences("ButtonPrefs", Context.MODE_PRIVATE)
-//        with(sharedPreferences.edit()) {
-//            putBoolean(buttonId, isEnabled)
-//            apply()
-//        }
-//    }
-//
-//    private fun loadButtonStates(context: Context): MutableMap<String, Boolean> {
-//        val sharedPreferences = context.getSharedPreferences("ButtonPrefs", Context.MODE_PRIVATE)
-//        val buttonStates = mutableMapOf<String, Boolean>()
-//        // Aquí puedes definir la lista de todos los botones que necesitas manejar
-//        listOf("alertButton_0", "alertButton_1", "alertButton_2", "alertButton_3", "alertButton_4").forEach { buttonId ->
-//            buttonStates[buttonId] = sharedPreferences.getBoolean(buttonId, true) // True por defecto
-//        }
-//        return buttonStates
-//    }
-//
-//    override fun onCleared() {
-//        super.onCleared()
-//        job?.cancel() // Cancelar cualquier trabajo activo cuando el ViewModel se destruye
-//    }
-//}

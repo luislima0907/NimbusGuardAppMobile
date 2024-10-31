@@ -34,15 +34,11 @@ fun PantallaDeNotificacion(
     val context = LocalContext.current
     val alertService = AlertService(context)
 
-    // Iniciar el listener para alertas en tiempo real
     LaunchedEffect(Unit) {
         alertService.listenChangesOnAlerts()
     }
     val userId = FirebaseAuth.getInstance().currentUser?.uid ?: ""
     val notificaciones = NotificacionRepository.obtenerNotificaciones(userId)
-    // Muestra el contador de notificaciones en la UI
-    //val contador = NotificacionRepository.obtenerContadorDeNotificaciones(userId)
-    //val _notificaciones = NotificacionRepository.notificaciones
     contenidoPantallaDeNotificacion(navController, notificaciones)
 }
 
@@ -51,8 +47,7 @@ fun PantallaDeNotificacion(
 @Composable
 fun contenidoPantallaDeNotificacion(
     navController: NavController,
-    notificaciones: List<Notificacion>,
-    //contadorDeNotificaciones: Int
+    notificaciones: List<Notificacion>
 ) {
     Box(modifier = Modifier.fillMaxWidth()) {
         Column(

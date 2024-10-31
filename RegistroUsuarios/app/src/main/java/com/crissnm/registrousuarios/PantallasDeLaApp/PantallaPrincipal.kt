@@ -22,6 +22,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,18 +51,14 @@ import com.google.firebase.auth.FirebaseAuth
 @Composable
 fun PantallaPrincipal(
     navController: NavController,
-    buttonStates: MutableMap<String, Boolean>,
+    buttonStates: Map<String, Boolean>,
     onButtonStatusChange: (String, Boolean) -> Unit,
 ) {
     val uid = FirebaseAuth.getInstance().currentUser?.uid ?: ""
 
-    // Obtener el contador de notificaciones como un estado observable
     val contadorDeNotificaciones by remember {
         derivedStateOf { NotificacionRepository.obtenerNotificaciones(uid).size }
     }
-
-    val context = LocalContext.current
-    val viewModel: BotonDeAlertaViewModel = viewModel(factory = BotonDeAlertaViewModelFactory(context))
 
     barraDeNavegacionInferior(
         navController = navController,
@@ -81,7 +78,6 @@ fun barraDeInformacionSuperior(){
         title = {
             Text(text = "Bienvenido a Nimbus Guard",
                 color = Color.Black,
-                //fontWeight = FontWeight.Bold,
                 fontSize = 27.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(),
@@ -106,10 +102,14 @@ fun barraDeInformacionSuperior(){
 @Composable
 fun barraDeNavegacionInferior(
     navController: NavController,
-    buttonStates: MutableMap<String, Boolean>,
+    buttonStates: Map<String, Boolean>,
     onButtonStatusChange: (String, Boolean) -> Unit,
     contadorDeNotificaciones: Int
 ) {
+    val context = LocalContext.current
+    val viewModel: BotonDeAlertaViewModel = viewModel(factory = BotonDeAlertaViewModelFactory(context))
+    val _buttonStates by viewModel.buttonStates.collectAsState(initial = emptyMap())
+
     val listaDeItemsDeLaBarraDeNavegacion = listOf(
         ItemDeLaBarra("Inicio", Icons.Default.Home, 0),
         ItemDeLaBarra("Perfil", Icons.Default.Person, 0),
@@ -152,7 +152,7 @@ fun barraDeNavegacionInferior(
             modifier = Modifier.padding(innerPadding),
             selectedIndex = selectedIndex,
             navController = navController,
-            buttonStates = buttonStates,
+            buttonStates = _buttonStates,
             onButtonStatusChange = onButtonStatusChange
         )
         barraDeInformacionSuperior()
@@ -165,9 +165,8 @@ fun contenidoDeLaBarraDeNavegacionInferior(
     modifier: Modifier,
     selectedIndex: Int,
     navController: NavController,
-    buttonStates: MutableMap<String, Boolean>,
-    onButtonStatusChange: (String, Boolean) -> Unit,
-    //notificaciones: List<Notificacion> // Agregar parámetro de notificaciones
+    buttonStates: Map<String, Boolean>,
+    onButtonStatusChange: (String, Boolean) -> Unit
 ) {
     when (selectedIndex) {
         0 -> PantallaDeInicio(

@@ -8,11 +8,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,7 +22,6 @@ import com.crissnm.registrousuarios.Componentes.Inicio.BotonDeAlerta
 import com.crissnm.registrousuarios.Componentes.Inicio.BotonDeAlertaViewModel
 import com.crissnm.registrousuarios.Componentes.Inicio.BotonDeAlertaViewModelFactory
 import com.crissnm.registrousuarios.Componentes.Inicio.ButtonBuilder
-import com.crissnm.registrousuarios.Componentes.Inicio.getButtonState
 import com.crissnm.registrousuarios.Componentes.pantallainicial.fontFamily
 import com.crissnm.registrousuarios.R
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
@@ -35,13 +31,18 @@ import com.google.android.gms.location.LocationServices
 @Composable
 fun PantallaDeInicio(
     navController: NavController,
-    buttonStates: MutableMap<String, Boolean>,
+    buttonStates: Map<String, Boolean>,
     onButtonStatusChange: (String, Boolean) -> Unit
 ) {
+    val context = LocalContext.current
+    val viewModel: BotonDeAlertaViewModel = viewModel(factory = BotonDeAlertaViewModelFactory(context))
+    val _buttonStates by viewModel.buttonStates.collectAsState(initial = emptyMap())
+
     contenidoPantallaDeInicio(
         navController = navController,
-        buttonStates = buttonStates,
-        onButtonStatusChange = onButtonStatusChange
+        buttonStates = _buttonStates,
+        onButtonStatusChange = onButtonStatusChange,
+        viewModel = viewModel
     )
 }
 
@@ -50,11 +51,11 @@ fun PantallaDeInicio(
 @Composable
 fun contenidoPantallaDeInicio(
     navController: NavController,
-    buttonStates: MutableMap<String, Boolean>,
+    buttonStates: Map<String, Boolean>,
     onButtonStatusChange: (String, Boolean) -> Unit,
-    viewModel: BotonDeAlertaViewModel = viewModel(factory = BotonDeAlertaViewModelFactory(LocalContext.current))
-
+    viewModel: BotonDeAlertaViewModel
 ) {
+
     val uid = navController.currentBackStackEntry?.arguments?.getString("uid")
     var alertId = navController.currentBackStackEntry?.arguments?.getString("alertId")
     val context = LocalContext.current
@@ -67,7 +68,6 @@ fun contenidoPantallaDeInicio(
         permissionsState.launchMultiplePermissionRequest()
     }
 
-    // Configuración de botones con identificadores únicos
     val buttonConfigs = listOf(
         ButtonBuilder()
             .setContainerColor(Color.Red)
@@ -136,14 +136,6 @@ fun contenidoPantallaDeInicio(
             .build()
     )
 
-    // Inicializar el estado de los botones si aún no se ha hecho
-    buttonConfigs.forEachIndexed { index, _ ->
-        val buttonId = "alertButton_$index" // ID único para cada botón
-        if (buttonStates[buttonId] == null) {
-            buttonStates[buttonId] = true // Habilitar por defecto
-        }
-    }
-
     Column(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -157,9 +149,6 @@ fun contenidoPantallaDeInicio(
         )
         buttonConfigs.forEachIndexed { index, buttonConfig ->
             val buttonId = "alertButton_$index" // ID único para cada botón
-            val isButtonEnabled = buttonStates[buttonId] ?: true // Obtener el estado del botón
-            //val savedState = getButtonState(context, buttonId) // Recupera el estado guardado
-            val _buttonStates by viewModel.buttonStates.observeAsState(initial = emptyMap())
 
             BotonDeAlerta(
                 uid = uid.toString(),
@@ -170,17 +159,12 @@ fun contenidoPantallaDeInicio(
                 fusedLocationClient = fusedLocationClient,
                 permissionsState = permissionsState,
                 context = context,
-                isButtonEnabled = isButtonEnabled, // Verificar el estado del botón
                 onButtonStatusChange = { isEnabled ->
                     if (!isEnabled) {
                         viewModel.disableButton(buttonId)
+                        onButtonStatusChange(buttonId, isEnabled)
                     }
-                    //isButtonEnabled = isEnabled
-                    //viewModel.disableButton(buttonId) // Actualizar el estado del botón en el ViewModel
-
-                    //buttonStates[buttonId] = isEnabled // Actualizar el estado del botón
-                    //Log.d("ButtonState", "Button $buttonId isEnabled: $isEnabled") // Log del estado
-                    //onButtonStatusChange(buttonId, isEnabled) // Usar el ID como referencia
+                    //viewModel.disableButton(buttonId)
                 }
             )
         }
