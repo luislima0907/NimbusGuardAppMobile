@@ -369,12 +369,11 @@ fun ContrasenaField(contrasena: MutableState<String>, errorMessage: MutableState
             text = errorMessage.value,
             color = Color.Red,  // Color del mensaje de error
             fontSize = 12.sp,
-            modifier = Modifier.padding(start = 16.dp)  // Ajusta el margen según sea necesario
+            modifier = Modifier.padding(start = 16.dp)
         )
     }
 }
 
-// Función para actualizar el valor de la contraseña y validar
 fun actualizarContrasena(
     newValue: String,
     contrasena: MutableState<String>,
