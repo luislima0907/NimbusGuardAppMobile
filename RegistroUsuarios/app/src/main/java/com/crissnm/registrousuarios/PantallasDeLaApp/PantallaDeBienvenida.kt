@@ -16,7 +16,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.crissnm.registrousuarios.Componentes.Notificacion.AlertService
+import com.crissnm.registrousuarios.Componentes.Notificacion.NotificationService
 import com.crissnm.registrousuarios.Navegacion.ManejoDeLasPantallasDeLaApp
 import com.crissnm.registrousuarios.R
 import com.crissnm.registrousuarios.R.color.celesteClaro
@@ -26,7 +26,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun PantallaDeBienvenida(navController: NavController) {
     val context = LocalContext.current
-    val alertService = AlertService(context)
+    val alertService = NotificationService(context)
 
     LaunchedEffect(key1 = true) {
         delay(1000)

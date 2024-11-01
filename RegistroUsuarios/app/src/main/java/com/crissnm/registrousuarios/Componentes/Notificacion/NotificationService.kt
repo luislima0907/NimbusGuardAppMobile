@@ -14,7 +14,7 @@ import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 
-class AlertService(
+class NotificationService(
     private val context: Context,
 ) {
     fun createNotification(

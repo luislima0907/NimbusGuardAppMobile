@@ -35,7 +35,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.crissnm.registrousuarios.Componentes.Notificacion.AlertService
+import com.crissnm.registrousuarios.Componentes.Notificacion.NotificationService
 import com.crissnm.registrousuarios.ManejoDeUsuarios.UserFireStoreService
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
@@ -313,7 +313,7 @@ fun handleSendAlert(
                 db.collection("alerts")
                     .document(alertId)
                     .set(alert)
-                val alertService = AlertService(context)
+                val alertService = NotificationService(context)
                 alertService.createNotification(
                     alertId =  alertId,
                     estado =  state,

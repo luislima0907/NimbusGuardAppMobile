@@ -21,7 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.crissnm.registrousuarios.Componentes.Notificacion.AlertService
+import com.crissnm.registrousuarios.Componentes.Notificacion.NotificationService
 import com.crissnm.registrousuarios.Componentes.Notificacion.Notificacion
 import com.crissnm.registrousuarios.Componentes.Notificacion.NotificacionRepository
 import com.crissnm.registrousuarios.Componentes.pantallainicial.fontFamily
@@ -32,7 +32,7 @@ fun PantallaDeNotificacion(
     navController: NavController
 ) {
     val context = LocalContext.current
-    val alertService = AlertService(context)
+    val alertService = NotificationService(context)
 
     LaunchedEffect(Unit) {
         alertService.listenChangesOnAlerts()
