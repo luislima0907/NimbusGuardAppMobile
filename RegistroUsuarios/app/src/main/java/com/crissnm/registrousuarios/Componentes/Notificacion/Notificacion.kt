@@ -1,7 +1,5 @@
 package com.crissnm.registrousuarios.Componentes.Notificacion
 
-import com.crissnm.registrousuarios.ManejoDeUsuarios.User
-
 data class Notificacion(
     val alertId: String,
     val estado: String,

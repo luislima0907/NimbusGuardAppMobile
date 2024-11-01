@@ -23,8 +23,6 @@ class BotonDeAlertaViewModel(context: Context) : ViewModel() {
     val buttonStates = _buttonStates.asStateFlow()
 
     private val activeTimers = mutableMapOf<String, Boolean>()
-    var timeRemaining by mutableStateOf(30)
-
 
     fun disableButton(buttonId: String, duration: Long = 30000L) {
         if (activeTimers[buttonId] == true) return

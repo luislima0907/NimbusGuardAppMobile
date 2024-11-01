@@ -7,7 +7,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 data class ButtonConfig(
-//    var tipoDeAlerta: String = "Emergencia",
     var containerColor: Color = Color.Red,
     var contentColor: Color = Color.White,
     var widthButton: Dp = 300.dp,

@@ -6,5 +6,4 @@ class ItemDeLaBarra(
     val texto: String,
     val icono: ImageVector,
     val contadorDeNotificaciones: Int
-) {
-}
+)

@@ -178,7 +178,7 @@ private fun startTimer(
     uid: String,
     buttonId: String,
     initialTime: Int,
-    isButtonEnabledState: MutableState<Boolean>,  // Asegúrate de que sea MutableState
+    isButtonEnabledState: MutableState<Boolean>,
     onTimeUpdate: (Int) -> Unit
 ) {
     val scope = CoroutineScope(Dispatchers.Main)
@@ -191,9 +191,8 @@ private fun startTimer(
             saveButtonState(context = context, uid = uid, buttonId = buttonId, isEnabled = false, timeRemaining = remainingTime)
             onTimeUpdate(remainingTime)
         }
-        // Al finalizar el contador, habilitar el botón y actualizar el estado
         saveButtonState(context = context, uid = uid, buttonId = buttonId, isEnabled = true, timeRemaining = 0)
-        isButtonEnabledState.value = true  // Actualizar el estado de habilitación
+        isButtonEnabledState.value = true
         onTimeUpdate(0)
     }
 }
@@ -250,7 +249,7 @@ fun showAlertInputDialog(
         confirmButton = {
             Button(onClick = {
                 handleSendAlert(
-                    context =  context, // Pasa el contexto aquí
+                    context =  context,
                     idAlert =  idAlert,
                     state =  state,
                     latitud =  latitud,
