@@ -22,6 +22,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,29 +59,27 @@ fun BotonDeAlerta(
     fusedLocationClient: FusedLocationProviderClient,
     permissionsState: MultiplePermissionsState,
     context: Context,
-    onButtonStatusChange: (Boolean) -> Unit,
-    viewModel: BotonDeAlertaViewModel = viewModel(factory = BotonDeAlertaViewModelFactory(LocalContext.current))
+    onButtonStatusChange: (Boolean) -> Unit
 ) {
     var showAlertDialog by remember { mutableStateOf(false) }
     var showConfirmationDialog by remember { mutableStateOf(false) }
     var latitud by remember { mutableStateOf(0.0) }
     var longitud by remember { mutableStateOf(0.0) }
     var buttonTitle by remember { mutableStateOf("") }
-    var timeRemaining by rememberSaveable { mutableStateOf(viewModel.timeRemaining) }
-    var isButtonEnabled by rememberSaveable { mutableStateOf(true) }
-
+    var timeRemaining by remember { mutableStateOf(0) }
+    var isButtonEnabled = remember { mutableStateOf(true) }
 
     LaunchedEffect(Unit) {
         val (buttonState, remainingTime) = getButtonState(context, uid, buttonId)
-        isButtonEnabled = buttonState
+        isButtonEnabled.value = buttonState
         timeRemaining = remainingTime
 
-        if (!isButtonEnabled && timeRemaining > 0) {
-            startTimer(context, uid, buttonId, timeRemaining) {
-                isButtonEnabled = true
-                timeRemaining = 30 // Restablece el temporizador
-                onButtonStatusChange(true)
-                saveButtonState(context, uid, buttonId, isButtonEnabled, timeRemaining)
+        if (!isButtonEnabled.value && timeRemaining > 0) {
+            startTimer(context, uid, buttonId, timeRemaining, isButtonEnabled) { updatedTimeRemaining ->
+                timeRemaining = updatedTimeRemaining
+                if (updatedTimeRemaining == 0) {
+                    isButtonEnabled.value = true
+                }
             }
         }
     }
@@ -97,7 +96,7 @@ fun BotonDeAlerta(
 
     Button(
         onClick = {
-            if (isButtonEnabled) {
+            if (isButtonEnabled.value) {
                 if (permissionsState.allPermissionsGranted) {
                     getCurrentLocation(fusedLocationClient) { lat, lon ->
                         latitud = lat
@@ -115,7 +114,7 @@ fun BotonDeAlerta(
                 Toast.makeText(context, "Este botón está deshabilitado temporalmente.", Toast.LENGTH_SHORT).show()
             }
         },
-        enabled = isButtonEnabled,
+        enabled = isButtonEnabled.value,
         colors = ButtonDefaults.buttonColors(
             containerColor = buttonConfig.containerColor,
             contentColor = buttonConfig.contentColor
@@ -138,7 +137,7 @@ fun BotonDeAlerta(
         )
     }
 
-    if (!isButtonEnabled && timeRemaining > 0) {
+    if (!isButtonEnabled.value && timeRemaining > 0) {
         Text(
             text = "Reactivación en: ${timeRemaining} segundos",
             modifier = Modifier.padding(8.dp)
@@ -157,15 +156,12 @@ fun BotonDeAlerta(
             onSend = { alertId ->
                 showAlertDialog = false
                 showConfirmationDialog = true
-                isButtonEnabled = false
+                isButtonEnabled.value = false
                 timeRemaining = 30
                 onButtonStatusChange(false)
-                saveButtonState(context, uid, buttonId, isButtonEnabled, timeRemaining)
-                startTimer(context, uid, buttonId, timeRemaining) {
-                    isButtonEnabled = true
-                    timeRemaining = 30
-                    onButtonStatusChange(true)
-                    saveButtonState(context, uid, buttonId, isButtonEnabled, timeRemaining)
+                saveButtonState(context, uid, buttonId, isButtonEnabled.value, timeRemaining)
+                startTimer(context = context, uid = uid, buttonId =  buttonId, initialTime = timeRemaining, isButtonEnabledState = isButtonEnabled) { updatedTimeRemaining ->
+                    timeRemaining = updatedTimeRemaining
                 }
             },
             onDismiss = { showAlertDialog = false }
@@ -182,7 +178,8 @@ private fun startTimer(
     uid: String,
     buttonId: String,
     initialTime: Int,
-    onFinish: () -> Unit
+    isButtonEnabledState: MutableState<Boolean>,  // Asegúrate de que sea MutableState
+    onTimeUpdate: (Int) -> Unit
 ) {
     val scope = CoroutineScope(Dispatchers.Main)
     var remainingTime = initialTime
@@ -190,10 +187,14 @@ private fun startTimer(
     scope.launch {
         while (remainingTime > 0) {
             delay(1000L)
-            remainingTime--
-            saveButtonState(context, uid, buttonId, false, remainingTime)
+            remainingTime -= 1
+            saveButtonState(context = context, uid = uid, buttonId = buttonId, isEnabled = false, timeRemaining = remainingTime)
+            onTimeUpdate(remainingTime)
         }
-        onFinish()
+        // Al finalizar el contador, habilitar el botón y actualizar el estado
+        saveButtonState(context = context, uid = uid, buttonId = buttonId, isEnabled = true, timeRemaining = 0)
+        isButtonEnabledState.value = true  // Actualizar el estado de habilitación
+        onTimeUpdate(0)
     }
 }
 
