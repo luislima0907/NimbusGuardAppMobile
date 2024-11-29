@@ -1,0 +1,56 @@
+PANTALLA DE INICIO DE LA APP
+- Logo y nombre de la App
+- Se deberá mostrar una breve descripción de lo que se puede hacer con la App, así como instrucciones para poder comenzarla a usar, en esta pantalla se
+  pueden incluir capturas de pantalla sobre las funciones que tendrá la app, esto para que la persona antes de registrarse sepa de que va la aplicación (este punto se puede dejar al final del desarrollo de la app ya que sera la introducción a esta y debemos tomar capturas del diseño final de la app para poder mostrar sus funciones completas).
+- Botones para registrarse o iniciar sesión para que el usuario pueda comenzar a usar la app.
+
+REGISTRO DE UN USUARIO GENERAL EN LA APP
+Datos a tomar en cuenta (Todos los campos son obligatorios):
+- Nombres (Campo de texto)
+- Apellidos (Campo de texto)
+- CUI (Campo de texto)
+- Teléfono (Campo de texto)
+- Departamento (Campo de texto que no se pueda editar)
+- Municipio (Campo de texto que no se pueda editar)
+- Registrar (Botón)
+
+Campo de los nombres y apellidos: No se deben permitir caracteres especiales (excepto la tilde para las vocales), números o símbolos, solo pueden ser caracteres que contengan todas las letras del abecedario, tanto en mayúsculas como en minúsculas, esto se puede realizar con la ayuda de las expresiones regulares para darle ese formato a los campos. Tambien procurar que cada nombre y apellido empiece con inicial mayúscula.
+
+En caso de que no se cumplan los requisitos se deberá mostrar un mensaje por debajo del campo, indicando lo que tiene que hacer para poder llenarlo, por ejemplo, si los campos contienen algún carácter especial, numero o símbolo, entonces debemos decirle al usuario que por favor ingrese caracteres que contengan las letras de la A a la Z.
+
+Campo del CUI: No se deben permitir caracteres de ningún tipo, aquí solo se deberán ingresar números enteros positivos. Como se manejaran los CUI de Guatemala, entonces el formato para estos seria el siguiente: 0000 00000 0000. El formato en las expresiones regulares deberá incluir: 4 dígitos, luego un espacio, 5 dígitos, luego otro espacio, y por ultimo, 4 dígitos, recalcando de que los dígitos deben ser enteros positivos. Tomar en cuenta el ejemplo de código de Fernando para poder validar los CUI y adaptarlo a los componentes de la App.
+
+En caso de que no se cumplan las condiciones, le mostraremos un mensaje por debajo del campo diciéndole el formato correcto que deberá ingresar en ese campo.
+Link con ejemplo web sobre la validación del CUI: https://jsfiddle.net/miguelerm/tp0t481o
+
+Campo del teléfono: Al igual que el CUI, no se permiten caracteres de ningún tipo, solo se podrán ingresar números enteros positivos. Como se manejaran teléfonos de Guatemala, entonces en el formato contara con el prefijo de "+502", este prefijo se deberá de poner en un campo de texto aparte, o a la par, del campo de texto que usara el usuario para ingresar su numero telefónico, esto con el fin de que el prefijo no se pueda modificar, así que el campo de texto que contenga al prefijo, tendrá que estar deshabilitado para su edición, esto se puede hacer con la ayuda de las propiedades de los componentes.
+
+El formato para el numero telefónico seria el siguiente: +502 0000 0000. Tiene que contener el prefijo, seguido de lo que ingrese el usuario en el otro campo de texto, es decir: 4 dígitos, luego un espacio, otros 4 dígitos, esto se deberá hacer con la ayuda de las expresiones regulares.
+
+En caso de que no se cumplan las condiciones, se mostrara un mensaje por debajo del campo indicando el formato correcto para llenar ese campo.
+
+Campo del departamento y municipio: Estos dos campos se autocompletaran una vez validado el CUI del usuario, ya que con los últimos cuatro dígitos de este, se puede conseguir el nombre del departamento y municipio en donde nació la persona. Se deberá hacer una colección que contenga los códigos de los departamentos y municipios para poder buscar el que ingreso el usuario por medio de su CUI, y así poder reflejarlo en los campos de texto de departamento y municipio, con esto logramos un mejor control sobre la información ingresada por el usuario, ya que aseguramos de que ese CUI existe y no escriba números al  azar. Por defecto estos campos no se podrán modificar de ninguna manera así que se deberán deshabilitar.
+
+Link con la guía de los formatos de CUI en Guatemala: https://atlasflacma.weebly.com/uploads/5/0/5/0/5050016/lista_de_municipios_guatemala.pdf
+
+Nota: para los CUI que solo tengan 3 números, colocar un 0 al comenzar el código, esto para poder cumplir con el formato que se le de a estos con las expresiones regulares. O bien, colocar solo 3 dígitos al final del formato original del CUI en vez de 4 dígitos, y así dejamos un digito como parámetro opcional en la expresión regular.
+
+Botón registrar: Aquí se tendrán que hacer las validaciones respectivas antes de guardar el nuevo usuario en nuestra base de datos, debemos comprobar si los campos no están vacíos o son nulos, y en caso de que falte algún campo obligatorio por llenar, entonces que no lo registre hasta que lo complete. Este botón nos ayudara a crear un objeto de tipo usuario y poder almacenarlo en una colección de usuarios para poderlos buscar en caso de que queramos borrarlos o editarlos en las siguientes pantallas de la app.
+
+INICIO DE SESION CON UN USUARIO EXISTENTE EN LA APP
+Datos a tomar en cuenta:
+- Nombres(Campo de texto)
+- Apellidos(Campo de texto)
+- CUI(Campo de texto)
+- Ingresar(Botón)
+
+Cuando se le de al botón de ingresar, se deberá comprobar la información en la base de datos de nuestra app, comprobando si los nombres, apellidos y CUI existen en nuestra colección de usuarios de la app. En caso de que no sea valida la información, entonces se deberá mostrar un mensaje que le diga al usuario que la información es incorrecta, no le especificaremos que información es incorrecta, ya que si indicamos esto, podemos ayudar a personas maliciosas que información les falta por completar para poder ingresar a la cuenta del usuario sin su consentimiento, así que con esto logramos que los usuarios siempre tengan un mejor control sobre sus cuentas, ya dependerá de ellos mismos acordarse de su información ingresada en la app.
+
+APARTADO PARA EDITAR O ELIMINAR EL PERFIL DE UN USUARIO EN LA APP
+Al momento de que un usuario ingrese en la app, debemos darle un apartado donde pueda ver su información completa, así como darle opciones para modificar su perfil, o bien, poder eliminarlo si este lo desea. Puede estar ubicado en una esquina de la app, o en el apartado de configuraciones de esta misma.
+
+Si el usuario desea editar la información debemos recuperar toda la información desde nuestra colección de usuarios que esta relacionada a nuestra base de datos y reflejarlos en campos de texto para que se puedan modificar, aquí se debe seguir la misma lógica que al momento de registrar un usuario ya que los campos a llenar serán los mismos, entonces tendremos que realizar las mismas validaciones una vez mas antes de poder actualizar la información en nuestra base de datos.
+
+Si el usuario quisiera eliminar su cuenta debemos de preguntarle si esta seguro de querer realizar esa acción e indicarle de que si lo hace todo su progreso e historial sera eliminado para siempre de nuestra app, antes de que el usuario pueda dar en el botón "si", este tendrá un contador de 10 segundos para que se pueda activar, esto con el fin de que no sea inmediata la eliminación de la cuenta del usuario.
+
+
